@@ -310,7 +310,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                 }}
                 placeholder={placeholders[placeholder]}
                 disabled={isLoading}
-                className={`w-full min-h-[60px] p-3 pr-24 text-base border-2 border-gray-300 rounded-lg resize-none focus:outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all ${
+                className={`w-full min-h-[60px] p-3 pr-32 text-base border-2 border-gray-300 rounded-lg resize-none focus:outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all bg-gray-50 ${
                   isLoading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
                 rows={1}
@@ -336,15 +336,22 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                     )}
                   </motion.div>
                 ) : (
-                  <motion.span
-                    key="hint"
+                  <motion.button
+                    key="submit-button"
+                    type="button"
+                    onClick={handleSubmit}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute bottom-2 right-3 text-xs text-gray-400"
+                    disabled={!inputValue.trim()}
+                    className={`absolute bottom-3 right-3 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                      !inputValue.trim() 
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                        : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
+                    }`}
                   >
-                    Enter to submit
-                  </motion.span>
+                    Ask Harvey
+                  </motion.button>
                 )}
               </AnimatePresence>
             </div>

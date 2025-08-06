@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, PenTool, PlayCircle, Upload } from 'lucide-react';
+import { FileText, PenTool, PlayCircle, Paperclip } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -85,8 +85,7 @@ const Home: React.FC = () => {
   const quickActions = [
     { icon: FileText, label: 'Summarize Document', text: 'Summarize the key points from this document' },
     { icon: PenTool, label: 'Draft Agreement', text: 'Draft a consulting agreement for a contractor' },
-    { icon: PlayCircle, label: 'Run Workflow', text: 'Run contract review workflow' },
-    { icon: Upload, label: 'Upload Files', text: 'Upload and analyze legal documents' }
+    { icon: PlayCircle, label: 'Run Workflow', text: 'Run contract review workflow' }
   ];
 
   const handleQuickAction = (text: string) => {
@@ -139,11 +138,22 @@ const Home: React.FC = () => {
             }}
             placeholder={placeholders[placeholder]}
             disabled={isLoading}
-            className={`w-full min-h-[80px] p-4 pr-32 text-base border-2 border-black rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all ${
+            className={`w-full min-h-[80px] p-4 pr-48 text-base border-2 border-black rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all bg-gray-50 ${
               isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             rows={1}
           />
+          
+          <button
+            type="button"
+            className="absolute bottom-3 right-32 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+            onClick={() => {
+              // TODO: Add file upload functionality
+              console.log('File upload clicked');
+            }}
+          >
+            <Paperclip size={18} />
+          </button>
           
           <AnimatePresence mode="wait">
             {isLoading ? (
@@ -152,7 +162,7 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute bottom-3 right-3 text-sm text-gray-600"
+                className="absolute bottom-2 right-3 text-sm text-gray-600"
               >
                 {loadingPhase === 'thinking' ? (
                   <span>
@@ -165,21 +175,28 @@ const Home: React.FC = () => {
                 )}
               </motion.div>
             ) : (
-              <motion.span
-                key="hint"
+              <motion.button
+                key="submit-button"
+                type="button"
+                onClick={handleSubmit}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute bottom-3 right-3 text-xs text-gray-500"
+                disabled={!inputValue.trim()}
+                className={`absolute bottom-3 right-3 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  !inputValue.trim() 
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                    : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
+                }`}
               >
-{navigator.platform.indexOf('Mac') > -1 ? 'Press ⌘K' : 'Press Ctrl+K'} for quick actions
-              </motion.span>
+                Ask Harvey
+              </motion.button>
             )}
           </AnimatePresence>
         </motion.form>
 
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-3"
+          className="grid grid-cols-1 md:grid-cols-2 gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -188,12 +205,15 @@ const Home: React.FC = () => {
             <motion.button
               key={index}
               onClick={() => handleQuickAction(action.text)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center justify-between gap-4 p-4 rounded-lg bg-white border-2 border-dashed border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all text-left"
             >
-              <action.icon size={20} className="text-gray-700" />
-              <span className="text-xs text-gray-700">{action.label}</span>
+              <div>
+                <div className="font-medium text-sm text-gray-800 mb-0.5">{action.label}</div>
+                <div className="text-xs text-gray-600">{action.text}</div>
+              </div>
+              <action.icon size={20} className="text-gray-300 flex-shrink-0" />
             </motion.button>
           ))}
         </motion.div>
