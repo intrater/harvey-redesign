@@ -1,11 +1,10 @@
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, MessageSquare, FileText, Zap, Archive, BookOpen, FileCheck, Settings, HelpCircle } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 import { getRelativeTime } from '../utils/time';
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { recentItems, activeItemId, setActiveItemId } = useRecent();
 
   const navItems = [
@@ -34,7 +33,7 @@ const Sidebar = () => {
     }`;
 
 
-  const getTypeColor = (type: string) => {
+  const getTypeColor = () => {
     return 'bg-gray-100 text-gray-700';
   };
 
@@ -100,7 +99,7 @@ const Sidebar = () => {
                       <div className="font-medium text-sm leading-tight truncate flex-1">
                         {item.title}
                       </div>
-                      <span className={`p-1.5 rounded-full ${getTypeColor(item.type)}`}>
+                      <span className={`p-1.5 rounded-full ${getTypeColor()}`}>
                         {(() => {
                           const IconComponent = getTypeIcon(item.type);
                           return <IconComponent size={12} />;

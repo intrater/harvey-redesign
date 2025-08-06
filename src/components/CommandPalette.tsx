@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, FileText, Zap, ArrowRight } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 import { getRelativeTime } from '../utils/time';
 
@@ -78,7 +77,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     // Add to recent items
     addRecentItem({
       title: inputValue.length > 30 ? inputValue.substring(0, 30) + '...' : inputValue,
-      type,
+      type: type as 'Analysis' | 'Draft' | 'Workflow',
       fullQuery: inputValue,
       route,
     });

@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, FileText, Scale, BookOpen, Paperclip, CheckCircle } from 'lucide-react';
-import { useRecent } from '../contexts/RecentContext';
 
 const Ask: React.FC = () => {
   const location = useLocation();
   const query = location.state?.query || '';
-  const fromRecent = location.state?.fromRecent || false;
-  const { recentItems } = useRecent();
   const [showResults, setShowResults] = useState(false);
 
   const isDepositionQuery = query.toLowerCase().includes('deposition') || 

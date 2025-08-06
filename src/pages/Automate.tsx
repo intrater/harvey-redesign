@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlayCircle, ListChecks, Clock, RefreshCw, CheckCircle, ArrowRight, Settings, BarChart3 } from 'lucide-react';
-import { useRecent } from '../contexts/RecentContext';
 
 const Automate: React.FC = () => {
   const location = useLocation();
   const query = location.state?.query || '';
-  const fromRecent = location.state?.fromRecent || false;
-  const { recentItems } = useRecent();
   const [showWorkflows, setShowWorkflows] = useState(false);
 
   const isWorkflowQuery = query.toLowerCase().includes('workflow') || 

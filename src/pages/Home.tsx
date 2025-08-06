@@ -63,7 +63,7 @@ const Home: React.FC = () => {
     // Add to recent items
     addRecentItem({
       title: inputValue.length > 30 ? inputValue.substring(0, 30) + '...' : inputValue,
-      type,
+      type: type as 'Analysis' | 'Draft' | 'Workflow',
       fullQuery: inputValue,
       route,
     });

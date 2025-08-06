@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, PenTool, FileCheck, Zap, Save, Download, Share2, Eye, Edit3 } from 'lucide-react';
-import { useRecent } from '../contexts/RecentContext';
+import { FileText, PenTool, FileCheck, Zap, Save, Share2, Eye, Edit3 } from 'lucide-react';
 
 const Draft: React.FC = () => {
   const location = useLocation();
   const query = location.state?.query || '';
-  const fromRecent = location.state?.fromRecent || false;
-  const { recentItems } = useRecent();
   const [showEditor, setShowEditor] = useState(false);
 
   const isAgreementQuery = query.toLowerCase().includes('agreement') || 
