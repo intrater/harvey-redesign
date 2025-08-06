@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MessageSquare, FileText, Zap, ArrowRight } from 'lucide-react';
+import { MessageSquare, FileText, Zap, ArrowRight } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 import { getRelativeTime } from '../utils/time';
 
@@ -21,14 +21,84 @@ interface CommandItem {
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [placeholder, setPlaceholder] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingPhase, setLoadingPhase] = useState('thinking');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
-  const { recentItems, setActiveItemId } = useRecent();
+  const { recentItems, setActiveItemId, addRecentItem } = useRecent();
 
   const isMac = navigator.platform.indexOf('Mac') > -1;
   const cmdKey = isMac ? '⌘' : 'Ctrl';
+
+  const placeholders = [
+    "Summarize the key points from this document",
+    "Draft a consulting agreement for a contractor", 
+    "Run contract review workflow"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholder((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.max(60, textareaRef.current.scrollHeight)}px`;
+    }
+  }, [inputValue]);
+
+  const detectRoute = (text: string): { route: string; type: string } => {
+    const lowerText = text.toLowerCase();
+    
+    if (lowerText.match(/\b(summarize|analyze|review|key points|analysis)\b/)) {
+      return { route: '/ask', type: 'Analysis' };
+    }
+    if (lowerText.match(/\b(draft|create|agreement|contract|document)\b/)) {
+      return { route: '/draft', type: 'Draft' };
+    }
+    if (lowerText.match(/\b(workflow|automate|checklist|process|automation)\b/)) {
+      return { route: '/automate', type: 'Workflow' };
+    }
+    
+    return { route: '/ask', type: 'Analysis' };
+  };
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!inputValue.trim() || isLoading) return;
+
+    const { route, type } = detectRoute(inputValue);
+    
+    // Add to recent items
+    addRecentItem({
+      title: inputValue.length > 30 ? inputValue.substring(0, 30) + '...' : inputValue,
+      type,
+      fullQuery: inputValue,
+      route,
+    });
+
+    setIsLoading(true);
+    setLoadingPhase('thinking');
+
+    // First phase: Thinking
+    setTimeout(() => {
+      setLoadingPhase('preparing');
+    }, 1000);
+
+    // Second phase: Navigate and close
+    setTimeout(() => {
+      navigate(route, { state: { query: inputValue } });
+      onClose();
+      setIsLoading(false);
+      setInputValue('');
+    }, 2000);
+  };
 
   const actions: CommandItem[] = [
     {
@@ -88,30 +158,22 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
 
   const allCommands = [...suggestedCommands, ...recentOnlyCommands, ...actions];
 
-  const filteredCommands = allCommands.filter(cmd =>
-    cmd.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    cmd.subtitle?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const groupedCommands = {
-    suggested: filteredCommands.filter(cmd => cmd.section === 'suggested'),
-    recent: filteredCommands.filter(cmd => cmd.section === 'recent'),
-    actions: filteredCommands.filter(cmd => cmd.section === 'actions'),
+    suggested: suggestedCommands,
+    recent: recentOnlyCommands,
+    actions: actions,
   };
 
   useEffect(() => {
     if (isOpen) {
-      setSearchQuery('');
+      setInputValue('');
       setSelectedIndex(0);
+      setIsLoading(false);
       setTimeout(() => {
-        searchInputRef.current?.focus();
+        textareaRef.current?.focus();
       }, 100);
     }
   }, [isOpen]);
-
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [searchQuery]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -122,17 +184,15 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           onClose();
           break;
         case 'ArrowDown':
-          e.preventDefault();
-          setSelectedIndex(prev => Math.min(prev + 1, filteredCommands.length - 1));
+          if (e.target !== textareaRef.current) {
+            e.preventDefault();
+            setSelectedIndex(prev => Math.min(prev + 1, allCommands.length - 1));
+          }
           break;
         case 'ArrowUp':
-          e.preventDefault();
-          setSelectedIndex(prev => Math.max(prev - 1, 0));
-          break;
-        case 'Enter':
-          e.preventDefault();
-          if (filteredCommands[selectedIndex]) {
-            filteredCommands[selectedIndex].action();
+          if (e.target !== textareaRef.current) {
+            e.preventDefault();
+            setSelectedIndex(prev => Math.max(prev - 1, 0));
           }
           break;
         case '1':
@@ -154,7 +214,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, selectedIndex, filteredCommands, suggestedCommands, onClose]);
+  }, [isOpen, selectedIndex, allCommands, suggestedCommands, onClose]);
 
   const renderSection = (title: string, commands: CommandItem[], startIndex: number) => {
     if (commands.length === 0) return null;
@@ -203,6 +263,19 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     );
   };
 
+  const AnimatedDots: React.FC = () => {
+    const [dots, setDots] = useState('');
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setDots((prev) => (prev.length >= 3 ? '' : prev + '.'));
+      }, 400);
+      return () => clearInterval(interval);
+    }, []);
+
+    return <span>{dots}</span>;
+  };
+
   if (!isOpen) return null;
 
   let currentIndex = 0;
@@ -221,53 +294,87 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
           transition={{ type: "spring", damping: 30, stiffness: 400 }}
-          className="bg-white rounded-lg shadow-xl border border-gray-200 w-full max-w-[600px] max-h-[400px] flex flex-col mx-4"
+          className="bg-white rounded-lg shadow-xl border border-gray-200 w-full max-w-[600px] max-h-[500px] flex flex-col mx-4"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="border-b border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <Search size={18} className="text-gray-400" />
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search commands..."
-                className="flex-1 text-base placeholder-gray-500 focus:outline-none"
+          <form onSubmit={handleSubmit} className="border-b border-gray-200 p-4">
+            <div className="relative">
+              <textarea
+                ref={textareaRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
+                placeholder={placeholders[placeholder]}
+                disabled={isLoading}
+                className={`w-full min-h-[60px] p-3 pr-24 text-base border-2 border-gray-300 rounded-lg resize-none focus:outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                rows={1}
               />
+              
+              <AnimatePresence mode="wait">
+                {isLoading ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute bottom-2 right-3 text-xs text-gray-600"
+                  >
+                    {loadingPhase === 'thinking' ? (
+                      <span>
+                        Thinking<AnimatedDots />
+                      </span>
+                    ) : (
+                      <span>
+                        Preparing {detectRoute(inputValue).type}<AnimatedDots />
+                      </span>
+                    )}
+                  </motion.div>
+                ) : (
+                  <motion.span
+                    key="hint"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute bottom-2 right-3 text-xs text-gray-400"
+                  >
+                    Enter to submit
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+          </form>
+          
+          <div className="flex-1 overflow-y-auto">
+            <div className="py-2">
+              {renderSection('Suggested', groupedCommands.suggested, (() => {
+                const index = currentIndex;
+                currentIndex += groupedCommands.suggested.length;
+                return index;
+              })())}
+              
+              {renderSection('Recent', groupedCommands.recent, (() => {
+                const index = currentIndex;
+                currentIndex += groupedCommands.recent.length;
+                return index;
+              })())}
+              
+              {renderSection('Common Actions', groupedCommands.actions, (() => {
+                const index = currentIndex;
+                currentIndex += groupedCommands.actions.length;
+                return index;
+              })())}
             </div>
           </div>
           
-          <div className="flex-1 overflow-y-auto">
-            {filteredCommands.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <div className="text-sm">No commands found</div>
-              </div>
-            ) : (
-              <div className="py-2">
-                {renderSection('Suggested', groupedCommands.suggested, (() => {
-                  const index = currentIndex;
-                  currentIndex += groupedCommands.suggested.length;
-                  return index;
-                })())}
-                
-                {renderSection('Recent', groupedCommands.recent, (() => {
-                  const index = currentIndex;
-                  currentIndex += groupedCommands.recent.length;
-                  return index;
-                })())}
-                
-                {renderSection('Actions', groupedCommands.actions, (() => {
-                  const index = currentIndex;
-                  currentIndex += groupedCommands.actions.length;
-                  return index;
-                })())}
-              </div>
-            )}
-          </div>
-          
           <div className="border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
-            Use ↑↓ to navigate • Enter to select • ESC to close
+            Type your question above • Enter to submit • ESC to close
           </div>
         </motion.div>
       </motion.div>

@@ -33,18 +33,18 @@ const Sidebar = () => {
         : 'text-gray-700 hover:bg-gray-100'
     }`;
 
-  const getItemIcon = (type: string) => {
-    switch (type) {
-      case 'Analysis': return '💬';
-      case 'Draft': return '✏️';
-      case 'Workflow': return '⚡';
-      default: return '💬';
-    }
+
+  const getTypeColor = (type: string) => {
+    return 'bg-gray-100 text-gray-700';
   };
 
-  const getItemSubtitle = (type: string, timestamp: Date) => {
-    const typeLabel = type === 'Analysis' ? 'Analysis' : type === 'Draft' ? 'Draft' : 'Workflow';
-    return `${typeLabel} • ${getRelativeTime(timestamp)}`;
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Analysis': return MessageSquare;
+      case 'Draft': return FileText;
+      case 'Workflow': return Zap;
+      default: return MessageSquare;
+    }
   };
 
   const handleRecentItemClick = (item: any) => {
@@ -89,21 +89,26 @@ const Sidebar = () => {
                 <button
                   key={item.id}
                   onClick={() => handleRecentItemClick(item)}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors border ${
+                  className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
                     activeItemId === item.id
-                      ? 'bg-blue-50 border-blue-200 text-blue-900'
-                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="flex items-start gap-2">
-                    <span className="text-base mt-0.5 flex-shrink-0">{getItemIcon(item.type)}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-xs leading-tight mb-1 truncate">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium text-sm leading-tight truncate flex-1">
                         {item.title}
                       </div>
-                      <div className="text-xs text-gray-500 leading-tight">
-                        {getItemSubtitle(item.type, item.timestamp)}
-                      </div>
+                      <span className={`p-1.5 rounded-full ${getTypeColor(item.type)}`}>
+                        {(() => {
+                          const IconComponent = getTypeIcon(item.type);
+                          return <IconComponent size={12} />;
+                        })()}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {getRelativeTime(item.timestamp)}
                     </div>
                   </div>
                 </button>
