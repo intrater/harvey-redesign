@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, PenTool, PlayCircle, Upload } from 'lucide-react';
+import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
   const [placeholder, setPlaceholder] = useState(0);
@@ -10,6 +11,12 @@ const Home: React.FC = () => {
   const [loadingPhase, setLoadingPhase] = useState('thinking');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
+  const { addRecentItem, setActiveItemId } = useRecent();
+
+  useEffect(() => {
+    // Clear active item when visiting home
+    setActiveItemId(null);
+  }, [setActiveItemId]);
 
   const placeholders = [
     "Summarize the key points from this deposition...",
@@ -51,7 +58,16 @@ const Home: React.FC = () => {
     e?.preventDefault();
     if (!inputValue.trim() || isLoading) return;
 
-    const { route } = detectRoute(inputValue);
+    const { route, type } = detectRoute(inputValue);
+    
+    // Add to recent items
+    addRecentItem({
+      title: inputValue.length > 30 ? inputValue.substring(0, 30) + '...' : inputValue,
+      type,
+      fullQuery: inputValue,
+      route,
+    });
+
     setIsLoading(true);
     setLoadingPhase('thinking');
 
@@ -81,7 +97,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
       <motion.div 
         className="w-full max-w-[600px] space-y-8"
         initial={{ opacity: 0, y: 20 }}
@@ -143,14 +159,14 @@ const Home: React.FC = () => {
                 exit={{ opacity: 0 }}
                 className="absolute bottom-3 right-3 text-xs text-gray-500"
               >
-                Press ⌘K for quick actions
+{navigator.platform.indexOf('Mac') > -1 ? 'Press ⌘K' : 'Press Ctrl+K'} for quick actions
               </motion.span>
             )}
           </AnimatePresence>
         </form>
 
         <motion.div 
-          className="grid grid-cols-4 gap-3"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
