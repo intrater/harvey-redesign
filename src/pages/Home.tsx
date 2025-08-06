@@ -51,7 +51,7 @@ const Home: React.FC = () => {
     e?.preventDefault();
     if (!inputValue.trim() || isLoading) return;
 
-    const { route, type } = detectRoute(inputValue);
+    const { route } = detectRoute(inputValue);
     setIsLoading(true);
     setLoadingPhase('thinking');
 
