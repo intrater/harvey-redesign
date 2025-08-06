@@ -344,7 +344,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     disabled={!inputValue.trim()}
-                    className={`absolute bottom-3 right-3 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    className={`absolute bottom-4 right-4 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                       !inputValue.trim() 
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                         : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'

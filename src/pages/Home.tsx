@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, PenTool, PlayCircle, Paperclip } from 'lucide-react';
+import { FileText, MessageSquare, Zap, Paperclip } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -19,9 +19,7 @@ const Home: React.FC = () => {
   }, [setActiveItemId]);
 
   const placeholders = [
-    "Summarize the key points from this document",
-    "Draft a consulting agreement for a contractor", 
-    "Run contract review workflow"
+    "Ask anything or describe what you need"
   ];
 
   useEffect(() => {
@@ -83,9 +81,9 @@ const Home: React.FC = () => {
   };
 
   const quickActions = [
-    { icon: FileText, label: 'Summarize Document', text: 'Summarize the key points from this document' },
-    { icon: PenTool, label: 'Draft Agreement', text: 'Draft a consulting agreement for a contractor' },
-    { icon: PlayCircle, label: 'Run Workflow', text: 'Run contract review workflow' }
+    { icon: MessageSquare, label: 'Ask', text: 'Summarize Material Changes from Redlines' },
+    { icon: FileText, label: 'Draft', text: 'Draft an interim operating covenants memo' },
+    { icon: Zap, label: 'Automate', text: 'Automate a post closing timeline' }
   ];
 
   const handleQuickAction = (text: string) => {
@@ -107,9 +105,6 @@ const Home: React.FC = () => {
           <h1 className="text-4xl font-semibold text-gray-900">
             How can Harvey help you today?
           </h1>
-          <p className="text-lg text-gray-600">
-            Describe what you need in your own words
-          </p>
         </div>
 
         <motion.form 
@@ -146,7 +141,7 @@ const Home: React.FC = () => {
           
           <button
             type="button"
-            className="absolute bottom-3 right-32 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+            className="absolute bottom-4 right-36 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
             onClick={() => {
               // TODO: Add file upload functionality
               console.log('File upload clicked');
@@ -183,7 +178,7 @@ const Home: React.FC = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 disabled={!inputValue.trim()}
-                className={`absolute bottom-3 right-3 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                className={`absolute bottom-4 right-4 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                   !inputValue.trim() 
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                     : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
@@ -196,7 +191,7 @@ const Home: React.FC = () => {
         </motion.form>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-3"
+          className="grid grid-cols-1 md:grid-cols-3 gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -224,7 +219,7 @@ const Home: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          Not sure where to start? Try one of the actions above or just describe what you need.
+          Not sure where to start? <button className="text-black hover:underline">Get some suggestions by browsing the library</button>
         </motion.p>
       </motion.div>
     </div>
