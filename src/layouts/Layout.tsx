@@ -3,11 +3,13 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import CommandPalette from '../components/CommandPalette';
+import { useRecent } from '../contexts/RecentContext';
 
 const Layout = () => {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+  const { clearRecentItems } = useRecent();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -15,11 +17,21 @@ const Layout = () => {
         e.preventDefault();
         setIsCommandPaletteOpen(true);
       }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
+        e.preventDefault();
+        clearRecentItems();
+        // Show a brief confirmation
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm';
+        notification.textContent = 'Recent items cleared';
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 2000);
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [clearRecentItems]);
 
   return (
     <>

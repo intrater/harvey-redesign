@@ -19,9 +19,9 @@ const Home: React.FC = () => {
   }, [setActiveItemId]);
 
   const placeholders = [
-    "Summarize the key points from this deposition...",
-    "Draft a consulting agreement for a contractor...",
-    "Run contract review workflow..."
+    "Summarize the key points from this document",
+    "Draft a consulting agreement for a contractor", 
+    "Run contract review workflow"
   ];
 
   useEffect(() => {
@@ -113,7 +113,20 @@ const Home: React.FC = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="relative">
+        <motion.form 
+          onSubmit={handleSubmit} 
+          className="relative"
+          initial={{ scale: 1 }}
+          animate={{ 
+            scale: [1, 1.005, 1],
+            transition: { 
+              duration: 4, 
+              repeat: Infinity, 
+              repeatType: "reverse",
+              ease: "easeInOut"
+            }
+          }}
+        >
           <textarea
             ref={textareaRef}
             value={inputValue}
@@ -163,7 +176,7 @@ const Home: React.FC = () => {
               </motion.span>
             )}
           </AnimatePresence>
-        </form>
+        </motion.form>
 
         <motion.div 
           className="grid grid-cols-2 md:grid-cols-4 gap-3"
@@ -184,6 +197,15 @@ const Home: React.FC = () => {
             </motion.button>
           ))}
         </motion.div>
+
+        <motion.p 
+          className="text-center text-sm text-gray-500 mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          Not sure where to start? Try one of the actions above or just describe what you need.
+        </motion.p>
       </motion.div>
     </div>
   );

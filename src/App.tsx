@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { RecentProvider } from './contexts/RecentContext';
+import './utils/preloadRoutes'; // Initialize route preloading
 import Layout from './layouts/Layout';
 import Home from './pages/Home';
 import Ask from './pages/Ask';

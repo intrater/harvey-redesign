@@ -220,7 +220,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, scale: 0.95, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          transition={{ type: "spring", damping: 30, stiffness: 400 }}
           className="bg-white rounded-lg shadow-xl border border-gray-200 w-full max-w-[600px] max-h-[400px] flex flex-col mx-4"
           onClick={(e) => e.stopPropagation()}
         >
