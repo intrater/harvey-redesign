@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, ChatCircle, Lightning, Paperclip, SlidersHorizontal, Check, BookmarkSimple, X, Database } from 'phosphor-react';
+import { FileText, ChatCircle, Lightning, Paperclip, SlidersHorizontal, Check, BookmarkSimple, X, Database, Info } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -252,11 +252,11 @@ const Home: React.FC = () => {
           <h1 className="text-4xl font-semibold text-gray-900">
             How can Harvey help you today, John?
           </h1>
-          <p className="text-sm text-gray-600 whitespace-nowrap">
-            Harvey is trained on proprietary legal datasets such as U.S. case law, statutes, and LexisNexis{' '}
-            <a href="#" className="text-blue-600 hover:text-blue-800 underline">
-              (learn more)
-            </a>
+          <p className="text-sm text-gray-600 whitespace-nowrap flex items-center justify-center gap-1">
+            Harvey is trained on proprietary legal datasets such as U.S. case law, statutes, and LexisNexis
+            <button className="text-gray-400 hover:text-gray-600 transition-colors" title="Learn more">
+              <Info size={16} weight="regular" />
+            </button>
           </p>
         </div>
 
