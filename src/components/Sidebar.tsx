@@ -131,7 +131,7 @@ const Sidebar = () => {
       </nav>
 
       <div className="mt-auto p-3">
-        <div className="mb-3 border-t border-gray-200"></div>
+        <div className="mb-4 pt-4 border-t border-gray-200"></div>
         {/* Ask and Search CTAs */}
         <div className="mb-3 flex gap-2">
           <button
