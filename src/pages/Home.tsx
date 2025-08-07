@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, MessageSquare, Zap, Paperclip, X } from 'lucide-react';
+import { FileText, MessageSquare, Zap, Paperclip, X, SlidersHorizontal } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -175,13 +175,24 @@ const Home: React.FC = () => {
           
           <button
             type="button"
-            className="absolute bottom-4 right-36 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+            className="absolute bottom-4 right-40 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
             onClick={() => {
               // TODO: Add file upload functionality
               console.log('File upload clicked');
             }}
           >
-            <Paperclip size={18} />
+            <Paperclip size={16} />
+          </button>
+          
+          <button
+            type="button"
+            className="absolute bottom-4 right-32 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+            onClick={() => {
+              // TODO: Add settings functionality
+              console.log('Settings clicked');
+            }}
+          >
+            <SlidersHorizontal size={16} />
           </button>
           
           <AnimatePresence mode="wait">
@@ -225,7 +236,7 @@ const Home: React.FC = () => {
         </motion.form>
 
         <motion.div 
-          className="flex gap-3 justify-center"
+          className="flex gap-4 justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -236,9 +247,9 @@ const Home: React.FC = () => {
               onClick={(e) => handleQuickAction(action, e)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all text-sm font-medium text-gray-700"
+              className="flex items-center gap-3 px-12 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all text-sm font-medium text-gray-600"
             >
-              <action.icon size={16} />
+              <action.icon size={18} />
               <span>{action.label}</span>
             </motion.button>
           ))}
