@@ -9,7 +9,6 @@ import {
   Gear, 
   Question, 
   X,
-  User,
   MagnifyingGlass
 } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
