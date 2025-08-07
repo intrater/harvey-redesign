@@ -22,7 +22,6 @@ const Sidebar = () => {
 
   const navItems = [
     { icon: House, label: 'Home', path: '/' },
-    { icon: User, label: 'Assistant', path: '/ask' },
     { icon: FileText, label: 'Draft', path: '/draft' },
     { icon: Lightning, label: 'Automate', path: '/automate' },
     { icon: Archive, label: 'Vault', path: '/vault' },
