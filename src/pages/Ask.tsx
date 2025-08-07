@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageSquare, FileSearch, Scale, TrendingUp, ArrowRight } from 'lucide-react';
+import { ChatCircle, MagnifyingGlass, Scales, TrendUp, ArrowRight } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 import { useCommandPalette } from '../contexts/CommandPaletteContext';
 
@@ -32,37 +32,37 @@ const Ask: React.FC = () => {
 
   const assistantExamples = [
     {
-      icon: FileSearch,
+      icon: MagnifyingGlass,
       title: 'Summarize material changes from redlines',
       description: 'Get a clear overview of what changed between document versions',
       category: 'Document Analysis'
     },
     {
-      icon: Scale,
+      icon: Scales,
       title: 'Analyze key provisions in this agreement',
       description: 'Identify and explain the most important terms and conditions',
       category: 'Contract Review'
     },
     {
-      icon: MessageSquare,
+      icon: ChatCircle,
       title: 'Compare these two contracts for differences',
       description: 'Side-by-side analysis highlighting variations and implications',
       category: 'Document Comparison'
     },
     {
-      icon: FileSearch,
+      icon: MagnifyingGlass,
       title: 'Extract all defined terms from this document',
       description: 'Compile a comprehensive list of definitions and their meanings',
       category: 'Document Analysis'
     },
     {
-      icon: Scale,
+      icon: Scales,
       title: 'Identify potential risks in this clause',
       description: 'Spot legal and business risks with mitigation suggestions',
       category: 'Risk Assessment'
     },
     {
-      icon: TrendingUp,
+      icon: TrendUp,
       title: 'Assess market standard terms vs. this agreement',
       description: 'Benchmark against industry practices and standards',
       category: 'Market Analysis'
@@ -178,7 +178,7 @@ const Ask: React.FC = () => {
 
             <div className="bg-green-50 rounded-lg border border-green-200 p-6">
               <div className="flex items-start gap-3">
-                <MessageSquare className="text-green-600 mt-1" size={20} />
+                <ChatCircle className="text-green-600 mt-1" size={22} weight="regular" />
                 <div>
                   <h2 className="text-lg font-semibold text-green-900 mb-2">AI Recommendations</h2>
                   <ul className="space-y-2 text-sm text-green-800">
@@ -198,7 +198,7 @@ const Ask: React.FC = () => {
                   onClick={() => navigate('/draft', { state: { query: `Draft liability cap clause based on analysis of: ${query}` } })}
                   className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
                 >
-                  <FileSearch className="text-gray-400 mb-2" size={20} />
+                  <MagnifyingGlass className="text-gray-400 mb-2" size={22} weight="regular" />
                   <h3 className="font-medium text-gray-900">Draft Liability Cap</h3>
                   <p className="text-sm text-gray-600">Create protective liability language</p>
                 </button>
@@ -206,7 +206,7 @@ const Ask: React.FC = () => {
                   onClick={() => navigate('/automate', { state: { query: `Contract review checklist for: ${query}` } })}
                   className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
                 >
-                  <Scale className="text-gray-400 mb-2" size={20} />
+                  <Scales className="text-gray-400 mb-2" size={22} weight="regular" />
                   <h3 className="font-medium text-gray-900">Review Checklist</h3>
                   <p className="text-sm text-gray-600">Generate comprehensive review workflow</p>
                 </button>
@@ -251,8 +251,8 @@ const Ask: React.FC = () => {
                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left hover:shadow-md transition-all group"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} />
-                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={16} />
+                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} weight="regular" />
+                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={18} weight="regular" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2 leading-tight">{example.title}</h3>
                 <p className="text-sm text-gray-600 mb-3">{example.description}</p>
@@ -276,7 +276,7 @@ const Ask: React.FC = () => {
               onClick={() => navigate('/')}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
-              <MessageSquare size={16} />
+              <ChatCircle size={18} weight="regular" />
               Go to Homepage Composer
             </button>
           </motion.div>

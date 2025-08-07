@@ -3,7 +3,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import CommandPalette from '../components/CommandPalette';
-import { useRecent } from '../contexts/RecentContext';
 import { CommandPaletteProvider } from '../contexts/CommandPaletteContext';
 
 const Layout = () => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Zap, ListChecks, Clock, RefreshCw, ArrowRight, MessageSquare, PlayCircle, CheckCircle, Settings } from 'lucide-react';
+import { Lightning, ListChecks, Clock, ArrowsClockwise, ArrowRight, ChatCircle, PlayCircle, CheckCircle, Gear } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 import { useCommandPalette } from '../contexts/CommandPaletteContext';
 
@@ -46,13 +46,13 @@ const Automate: React.FC = () => {
       category: 'Due Diligence'
     },
     {
-      icon: RefreshCw,
+      icon: ArrowsClockwise,
       title: 'Execute contract review workflow',
       description: 'Automated clause analysis and risk assessment',
       category: 'Contract Review'
     },
     {
-      icon: Zap,
+      icon: Lightning,
       title: 'Generate closing document set',
       description: 'Compile all required documents for transaction closing',
       category: 'Closing'
@@ -129,14 +129,14 @@ const Automate: React.FC = () => {
             </div>
             <div className="flex gap-2">
               <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                <Settings size={16} className="inline mr-1" />
+                <Gear size={18} weight="regular" className="inline mr-1" />
                 Configure
               </button>
               <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
                 Pause
               </button>
               <button className="px-3 py-1.5 text-sm bg-black text-white rounded-md hover:bg-gray-800">
-                <PlayCircle size={16} className="inline mr-1" />
+                <PlayCircle size={18} weight="regular" className="inline mr-1" />
                 Continue
               </button>
             </div>
@@ -162,7 +162,7 @@ const Automate: React.FC = () => {
                         : 'border-gray-300 bg-gray-50'
                     }`}>
                       {step.status === 'completed' ? (
-                        <CheckCircle size={16} className="text-white" />
+                        <CheckCircle size={18} weight="fill" className="text-white" />
                       ) : step.status === 'active' ? (
                         <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
                       ) : (
@@ -193,7 +193,7 @@ const Automate: React.FC = () => {
 
             <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-6">
               <div className="flex items-start gap-3">
-                <Zap className="text-yellow-600 mt-1" size={20} />
+                <Lightning className="text-yellow-600 mt-1" size={22} weight="regular" />
                 <div>
                   <h2 className="text-lg font-semibold text-yellow-900 mb-2">Automation in Progress</h2>
                   <p className="text-sm text-yellow-800 mb-4">
@@ -213,15 +213,15 @@ const Automate: React.FC = () => {
                 <h3 className="font-semibold text-gray-900 mb-4">Generated Outputs</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle size={14} className="text-green-500" />
+                    <CheckCircle size={16} weight="fill" className="text-green-500" />
                     <span>Post-closing checklist (PDF)</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle size={14} className="text-green-500" />
+                    <CheckCircle size={16} weight="fill" className="text-green-500" />
                     <span>Timeline spreadsheet (Excel)</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
-                    <Clock size={14} />
+                    <Clock size={16} weight="regular" />
                     <span>Task assignments (pending)</span>
                   </div>
                 </div>
@@ -281,8 +281,8 @@ const Automate: React.FC = () => {
                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left hover:shadow-md transition-all group"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} />
-                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={16} />
+                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} weight="regular" />
+                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={18} weight="regular" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2 leading-tight">{example.title}</h3>
                 <p className="text-sm text-gray-600 mb-3">{example.description}</p>
@@ -306,7 +306,7 @@ const Automate: React.FC = () => {
               onClick={() => navigate('/')}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
-              <MessageSquare size={16} />
+              <ChatCircle size={18} weight="regular" />
               Go to Homepage Composer
             </button>
           </motion.div>

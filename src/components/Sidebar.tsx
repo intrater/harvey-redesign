@@ -1,5 +1,16 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, MessageSquare, FileText, Zap, Archive, BookOpen, FileCheck, Settings, HelpCircle, X } from 'lucide-react';
+import { 
+  House, 
+  ChatCircle,
+  FileText,
+  Lightning,
+  Archive, 
+  BookOpen, 
+  CheckSquare, 
+  Gear, 
+  Question, 
+  X 
+} from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 import { getRelativeTime } from '../utils/time';
 
@@ -8,21 +19,21 @@ const Sidebar = () => {
   const { recentItems, activeItemId, setActiveItemId, removeRecentItem } = useRecent();
 
   const navItems = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: MessageSquare, label: 'Assistant', path: '/ask' },
+    { icon: House, label: 'Home', path: '/' },
+    { icon: ChatCircle, label: 'Assistant', path: '/ask' },
     { icon: FileText, label: 'Draft', path: '/draft' },
-    { icon: Zap, label: 'Automate', path: '/automate' },
+    { icon: Lightning, label: 'Automate', path: '/automate' },
   ];
 
   const bottomItems = [
     { icon: Archive, label: 'Vault', path: '/vault' },
     { icon: BookOpen, label: 'Library', path: '/library' },
-    { icon: FileCheck, label: 'Guidance', path: '/guidance' },
+    { icon: CheckSquare, label: 'Guidance', path: '/guidance' },
   ];
 
   const utilityItems = [
-    { icon: Settings, label: 'Settings', path: '/settings' },
-    { icon: HelpCircle, label: 'Help', path: '/help' },
+    { icon: Gear, label: 'Settings', path: '/settings' },
+    { icon: Question, label: 'Help', path: '/help' },
   ];
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
@@ -31,6 +42,15 @@ const Sidebar = () => {
         ? 'bg-black text-white'
         : 'text-gray-700 hover:bg-gray-100'
     }`;
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Analysis': return ChatCircle;
+      case 'Draft': return FileText;
+      case 'Workflow': return Lightning;
+      default: return ChatCircle;
+    }
+  };
 
 
 
@@ -58,7 +78,7 @@ const Sidebar = () => {
               to={item.path}
               className={navLinkClasses}
             >
-              <item.icon size={18} />
+              <item.icon size={20} weight="regular" />
               <span>{item.label}</span>
             </NavLink>
           ))}
@@ -66,11 +86,11 @@ const Sidebar = () => {
 
         <div className="my-4 border-t border-gray-200"></div>
 
-        <div className="mb-2">
-          <h2 className="px-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Recent</h2>
+        <div className="mb-1">
+          <h2 className="px-3 text-xs font-medium text-gray-600">Recents</h2>
         </div>
 
-        <div className="space-y-0.5 mb-4">
+        <div className="space-y-0.5 mb-2">
           {recentItems.length === 0 ? (
             <div className="px-3 py-2 text-xs text-gray-500">
               No recent conversations
@@ -81,7 +101,7 @@ const Sidebar = () => {
                 <button
                   key={item.id}
                   onClick={() => handleRecentItemClick(item)}
-                  className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors group ${
+                  className={`w-full text-left px-3 py-1 rounded-md text-sm transition-colors group ${
                     activeItemId === item.id
                       ? 'bg-gray-100 text-gray-900'
                       : 'text-gray-700 hover:bg-gray-50'
@@ -97,25 +117,31 @@ const Sidebar = () => {
                         className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 rounded-full transition-all ml-auto flex-shrink-0"
                         title="Remove from recent"
                       >
-                        <X size={12} className="text-gray-400 hover:text-gray-600" />
+                        <X size={14} weight="bold" className="text-gray-400 hover:text-gray-600" />
                       </button>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {getRelativeTime(item.timestamp)}
+                    <div className="text-xs text-gray-500 flex items-center gap-1">
+                      {(() => {
+                        const IconComponent = getTypeIcon(item.type);
+                        return <IconComponent size={12} weight="fill" className="text-gray-400" />;
+                      })()}
+                      <span>{getRelativeTime(item.timestamp)}</span>
                     </div>
                   </div>
                 </button>
               ))}
               {recentItems.length > 0 && (
-                <button className="w-full text-left px-3 py-2 text-xs text-gray-500 hover:text-gray-600 transition-colors">
-                  View all history →
-                </button>
+                <div className="px-3 py-1.5">
+                  <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                    View all →
+                  </button>
+                </div>
               )}
             </>
           )}
         </div>
 
-        <div className="border-t border-gray-200 pt-4">
+        <div className="border-t border-gray-200 pt-2">
           <div className="space-y-1">
             {bottomItems.map((item) => (
               <NavLink
@@ -123,7 +149,7 @@ const Sidebar = () => {
                 to={item.path}
                 className={navLinkClasses}
               >
-                <item.icon size={18} />
+                <item.icon size={20} weight="regular" />
                 <span>{item.label}</span>
               </NavLink>
             ))}
@@ -139,7 +165,7 @@ const Sidebar = () => {
               to={item.path}
               className={navLinkClasses}
             >
-              <item.icon size={18} />
+              <item.icon size={20} weight="regular" />
               <span>{item.label}</span>
             </NavLink>
           ))}

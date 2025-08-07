@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, MessageSquare, Zap, Paperclip, SlidersHorizontal, Check } from 'lucide-react';
+import { FileText, ChatCircle, Lightning, Paperclip, SlidersHorizontal, Check, BookmarkSimple, X, CaretDown } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -11,6 +11,9 @@ const Home: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+  const [isPromptsModalOpen, setIsPromptsModalOpen] = useState(false);
+  const [activePromptsTab, setActivePromptsTab] = useState<'private' | 'team' | 'harvey'>('private');
+  const [selectedPrompt, setSelectedPrompt] = useState<{title: string, prompt: string} | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const { addRecentItem, setActiveItemId } = useRecent();
@@ -116,9 +119,9 @@ const Home: React.FC = () => {
   };
 
   const quickActions = [
-    { icon: MessageSquare, label: 'Assistant', value: 'assistant' },
+    { icon: ChatCircle, label: 'Assistant', value: 'assistant' },
     { icon: FileText, label: 'Draft', value: 'draft' },
-    { icon: Zap, label: 'Automate', value: 'automate' }
+    { icon: Lightning, label: 'Automate', value: 'automate' }
   ];
 
   const modalOptions = {
@@ -145,6 +148,57 @@ const Home: React.FC = () => {
     ]
   };
 
+  const savedPrompts = {
+    private: [
+      {
+        id: '1',
+        title: 'Contract Risk Analysis',
+        prompt: 'Analyze this contract for potential risks and suggest mitigation strategies. Focus on liability, termination, and intellectual property clauses.',
+        category: 'Analysis'
+      },
+      {
+        id: '2',
+        title: 'Due Diligence Summary',
+        prompt: 'Create a comprehensive summary of due diligence findings including red flags, compliance issues, and recommendations.',
+        category: 'Analysis'
+      },
+      {
+        id: '3',
+        title: 'Employment Agreement Draft',
+        prompt: 'Draft an employment agreement for [ROLE] including standard clauses for equity, confidentiality, and termination.',
+        category: 'Draft'
+      }
+    ],
+    team: [
+      {
+        id: '4',
+        title: 'NDA Comparison Template',
+        prompt: 'Compare the attached NDA to our standard template and highlight key differences, risks, and negotiation points.',
+        category: 'Analysis'
+      },
+      {
+        id: '5',
+        title: 'Investment Term Sheet',
+        prompt: 'Draft a Series A term sheet with standard investor protections, anti-dilution provisions, and governance terms.',
+        category: 'Draft'
+      }
+    ],
+    harvey: [
+      {
+        id: '6',
+        title: 'Legal Document Summary',
+        prompt: 'Provide a concise summary of this legal document including key terms, obligations, and important dates.',
+        category: 'Analysis'
+      },
+      {
+        id: '7',
+        title: 'Contract Clause Generator',
+        prompt: 'Generate standard contract clauses for [CLAUSE TYPE] with appropriate legal language and industry standards.',
+        category: 'Draft'
+      }
+    ]
+  };
+
   const handleQuickAction = (action: typeof quickActions[0], event: React.MouseEvent<HTMLButtonElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     setActiveModal(action.value);
@@ -155,6 +209,24 @@ const Home: React.FC = () => {
   const handleOptionSelect = (option: string) => {
     setInputValue(option);
     setActiveModal(null);
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const handlePromptSelect = (promptData: {title: string, prompt: string}) => {
+    setInputValue(promptData.prompt);
+    setSelectedPrompt(promptData);
+    setIsPromptsModalOpen(false);
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const handleClearPrompt = () => {
+    setSelectedPrompt(null);
+    setInputValue('');
+    setIsPromptsModalOpen(false);
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -200,54 +272,78 @@ const Home: React.FC = () => {
             }}
             placeholder={placeholders[placeholder]}
             disabled={isLoading}
-            className={`w-full min-h-[80px] p-4 pr-48 text-base border-2 border-black rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all bg-gray-50 ${
+            className={`w-full min-h-[120px] p-4 pb-14 text-base border-2 border-black rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all bg-gray-50 ${
               isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             rows={1}
           />
           
-          <button
-            type="button"
-            className="absolute bottom-4 right-40 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
-            onClick={() => {
-              // TODO: Add file upload functionality
-              console.log('File upload clicked');
-            }}
-          >
-            <Paperclip size={16} />
-          </button>
+          {/* Bottom Left Utility Icons */}
+          <div className="absolute bottom-4 left-4 flex gap-1">
+            <button
+              type="button"
+              className="p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+              onClick={() => {
+                // TODO: Add file upload functionality
+                console.log('File upload clicked');
+              }}
+            >
+              <Paperclip size={18} weight="regular" />
+            </button>
+            
+            <button
+              type="button"
+              className="p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+              onClick={() => {
+                // TODO: Add settings functionality
+                console.log('Settings clicked');
+              }}
+            >
+              <SlidersHorizontal size={18} weight="regular" />
+            </button>
+
+            <button
+              type="button"
+              className="p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+              onClick={() => setIsPromptsModalOpen(true)}
+            >
+              <BookmarkSimple size={18} weight="regular" />
+            </button>
+          </div>
           
-          <button
-            type="button"
-            className="absolute bottom-4 right-32 p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
-            onClick={() => {
-              // TODO: Add settings functionality
-              console.log('Settings clicked');
-            }}
-          >
-            <SlidersHorizontal size={16} />
-          </button>
-          
-          <AnimatePresence mode="wait">
-            {!isLoading && (
-              <motion.button
-                key="submit-button"
-                type="button"
-                onClick={handleSubmit}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                disabled={!inputValue.trim()}
-                className={`absolute bottom-4 right-4 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  !inputValue.trim() 
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                    : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
-                }`}
-              >
-                Ask Harvey
-              </motion.button>
-            )}
-          </AnimatePresence>
+          {/* Bottom Right Prompt Dropdown and Ask Harvey Button */}
+          <div className="absolute bottom-4 right-4 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsPromptsModalOpen(true)}
+              className="px-3 py-1.5 text-sm border border-gray-300 hover:bg-gray-100 transition-colors rounded-md"
+            >
+              <span className="text-gray-700">
+                {selectedPrompt ? selectedPrompt.title : 'Prompt'}
+              </span>
+            </button>
+            
+            <AnimatePresence mode="wait">
+              {!isLoading && (
+                <motion.button
+                  key="submit-button"
+                  type="button"
+                  onClick={handleSubmit}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  disabled={!inputValue.trim()}
+                  className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    !inputValue.trim() 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
+                  }`}
+                >
+                  Ask Harvey
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.form>
 
         <motion.div 
@@ -264,7 +360,7 @@ const Home: React.FC = () => {
               whileTap={{ scale: 0.98 }}
               className="flex items-center gap-3 px-12 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all text-sm font-medium text-gray-600"
             >
-              <action.icon size={18} />
+              <action.icon size={20} weight="regular" />
               <span>{action.label}</span>
             </motion.button>
           ))}
@@ -360,7 +456,7 @@ const Home: React.FC = () => {
                           animate={{ scale: 1 }}
                           transition={{ delay: 0.2 }}
                         >
-                          <Check size={12} className="text-white" />
+                          <Check size={14} weight="bold" className="text-white" />
                         </motion.div>
                       )}
                     </div>
@@ -383,6 +479,108 @@ const Home: React.FC = () => {
                 >
                   Cancel
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Prompts Library Modal */}
+      <AnimatePresence>
+        {isPromptsModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black bg-opacity-50 flex items-center justify-center p-4"
+            onClick={() => setIsPromptsModalOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-gray-900">Prompt Library</h2>
+                  <button
+                    onClick={() => setIsPromptsModalOpen(false)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X size={24} weight="regular" />
+                  </button>
+                </div>
+                
+                {/* Tabs */}
+                <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                  {(['private', 'team', 'harvey'] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActivePromptsTab(tab)}
+                      className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors capitalize ${
+                        activePromptsTab === tab
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto max-h-[60vh]">
+                <div className="space-y-3">
+                  {/* Clear prompt option */}
+                  {selectedPrompt && (
+                    <motion.button
+                      onClick={handleClearPrompt}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      className="w-full text-left p-4 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
+                    >
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium text-red-900 text-sm">Clear selected prompt</h3>
+                        <X size={16} weight="bold" className="text-red-600" />
+                      </div>
+                      <p className="text-xs text-red-700 mt-1">
+                        Return to custom prompt mode
+                      </p>
+                    </motion.button>
+                  )}
+                  
+                  {savedPrompts[activePromptsTab].map((prompt) => (
+                    <motion.button
+                      key={prompt.id}
+                      onClick={() => handlePromptSelect({title: prompt.title, prompt: prompt.prompt})}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      className="w-full text-left p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-medium text-gray-900 text-sm">{prompt.title}</h3>
+                        <span className="text-xs px-2 py-1 bg-gray-200 text-gray-600 rounded-full">
+                          {prompt.category}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 line-clamp-2 group-hover:text-gray-700">
+                        {prompt.prompt}
+                      </p>
+                    </motion.button>
+                  ))}
+                </div>
+                
+                {savedPrompts[activePromptsTab].length === 0 && (
+                  <div className="text-center py-12">
+                    <BookmarkSimple size={48} weight="light" className="text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">No saved prompts yet</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Your {activePromptsTab} prompts will appear here
+                    </p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>

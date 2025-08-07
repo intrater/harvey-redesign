@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, FileText, Zap } from 'lucide-react';
+import { ChatCircle, FileText, Lightning } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 import { getRelativeTime } from '../utils/time';
 
@@ -105,7 +105,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
       id: 'new-analysis',
       title: 'Assistant',
       subtitle: 'Summarize Material Changes from Redlines',
-      icon: 'MessageSquare',
+      icon: 'ChatCircle',
       section: 'actions',
       action: () => {
         navigate('/ask');
@@ -127,7 +127,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
       id: 'run-workflow',
       title: 'Automate',
       subtitle: 'Automate a post closing timeline',
-      icon: 'Zap',
+      icon: 'Lightning',
       section: 'actions',
       action: () => {
         navigate('/automate');
@@ -239,11 +239,11 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center gap-3">
                   {title === 'Common Actions' ? (
                     (() => {
-                      const IconComponent = command.icon === 'MessageSquare' ? MessageSquare 
+                      const IconComponent = command.icon === 'ChatCircle' ? ChatCircle 
                         : command.icon === 'FileText' ? FileText 
-                        : command.icon === 'Zap' ? Zap 
+                        : command.icon === 'Lightning' ? Lightning 
                         : null;
-                      return IconComponent ? <IconComponent size={18} className={isSelected ? 'text-white' : 'text-gray-700'} /> : <span className="text-base">{command.icon}</span>;
+                      return IconComponent ? <IconComponent size={20} weight="regular" className={isSelected ? 'text-white' : 'text-gray-700'} /> : <span className="text-base">{command.icon}</span>;
                     })()
                   ) : (
                     <span className="text-base">{command.icon}</span>

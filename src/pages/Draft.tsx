@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FileText, PenTool, Scale, Briefcase, ArrowRight, MessageSquare, Save, Share2, Eye } from 'lucide-react';
+import { FileText, PencilSimple, Scales, Briefcase, ArrowRight, ChatCircle, FloppyDisk, ShareNetwork, Eye } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 import { useCommandPalette } from '../contexts/CommandPaletteContext';
 
@@ -40,13 +40,13 @@ const Draft: React.FC = () => {
       category: 'Corporate'
     },
     {
-      icon: PenTool,
+      icon: PencilSimple,
       title: 'Create a standard NDA for a new client',
       description: 'Generate customizable non-disclosure agreement template',
       category: 'Contracts'
     },
     {
-      icon: Scale,
+      icon: Scales,
       title: 'Write a cease and desist letter',
       description: 'Professional demand letter with legal backing',
       category: 'Litigation'
@@ -64,7 +64,7 @@ const Draft: React.FC = () => {
       category: 'Contracts'
     },
     {
-      icon: PenTool,
+      icon: PencilSimple,
       title: 'Draft employment agreement terms',
       description: 'Comprehensive employment contract provisions',
       category: 'Employment'
@@ -160,15 +160,15 @@ This memorandum shall remain in effect until the earlier of: (i) completion of t
             </div>
             <div className="flex gap-2">
               <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                <Eye size={16} className="inline mr-1" />
+                <Eye size={18} weight="regular" className="inline mr-1" />
                 Preview
               </button>
               <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                <Share2 size={16} className="inline mr-1" />
+                <ShareNetwork size={18} weight="regular" className="inline mr-1" />
                 Share
               </button>
               <button className="px-3 py-1.5 text-sm bg-black text-white rounded-md hover:bg-gray-800">
-                <Save size={16} className="inline mr-1" />
+                <FloppyDisk size={18} weight="regular" className="inline mr-1" />
                 Save
               </button>
             </div>
@@ -190,7 +190,7 @@ This memorandum shall remain in effect until the earlier of: (i) completion of t
             
             <div className="mt-6 bg-blue-50 rounded-lg border border-blue-200 p-4">
               <div className="flex items-start gap-3">
-                <MessageSquare className="text-blue-600 mt-1" size={20} />
+                <ChatCircle className="text-blue-600 mt-1" size={22} weight="regular" />
                 <div>
                   <h3 className="font-medium text-blue-900 mb-2">AI Writing Assistant</h3>
                   <p className="text-sm text-blue-800 mb-3">
@@ -246,8 +246,8 @@ This memorandum shall remain in effect until the earlier of: (i) completion of t
                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left hover:shadow-md transition-all group"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} />
-                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={16} />
+                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} weight="regular" />
+                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={18} weight="regular" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2 leading-tight">{example.title}</h3>
                 <p className="text-sm text-gray-600 mb-3">{example.description}</p>
@@ -271,7 +271,7 @@ This memorandum shall remain in effect until the earlier of: (i) completion of t
               onClick={() => navigate('/')}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
-              <MessageSquare size={16} />
+              <ChatCircle size={18} weight="regular" />
               Go to Homepage Composer
             </button>
           </motion.div>
