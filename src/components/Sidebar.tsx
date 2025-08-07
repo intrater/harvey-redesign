@@ -14,7 +14,6 @@ import {
 } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 import { useCommandPalette } from '../contexts/CommandPaletteContext';
-import { getRelativeTime } from '../utils/time';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -104,22 +103,17 @@ const Sidebar = () => {
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center">
-                      <div className="text-sm font-medium leading-tight truncate pr-1" style={{maxWidth: 'calc(100% - 24px)'}}>
-                        {item.title}
-                      </div>
-                      <button
-                        onClick={(e) => handleRemoveItem(e, item.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 rounded-full transition-all ml-auto flex-shrink-0"
-                        title="Remove from recent"
-                      >
-                        <X size={14} weight="bold" className="text-gray-400 hover:text-gray-600" />
-                      </button>
+                  <div className="flex items-center">
+                    <div className="text-sm font-medium leading-tight truncate pr-1" style={{maxWidth: 'calc(100% - 24px)'}}>
+                      {item.title}
                     </div>
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-600">
-                      <span>{getRelativeTime(item.timestamp)}</span>
-                    </div>
+                    <button
+                      onClick={(e) => handleRemoveItem(e, item.id)}
+                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 rounded-full transition-all ml-auto flex-shrink-0"
+                      title="Remove from recent"
+                    >
+                      <X size={14} weight="bold" className="text-gray-400 hover:text-gray-600" />
+                    </button>
                   </div>
                 </button>
               ))}
