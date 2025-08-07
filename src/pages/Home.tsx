@@ -60,7 +60,7 @@ const Home: React.FC = () => {
         return [
           'Analyzing your request',
           'Preparing legal research tools',
-          'Setting up assist environment'
+          'Setting up assistant environment'
         ];
       case 'Draft':
         return [
@@ -116,13 +116,13 @@ const Home: React.FC = () => {
   };
 
   const quickActions = [
-    { icon: MessageSquare, label: 'Assist', value: 'assist' },
+    { icon: MessageSquare, label: 'Assistant', value: 'assistant' },
     { icon: FileText, label: 'Draft', value: 'draft' },
     { icon: Zap, label: 'Automate', value: 'automate' }
   ];
 
   const modalOptions = {
-    assist: [
+    assistant: [
       'Summarize material changes from redlines',
       'Analyze key provisions in this agreement',
       'Compare these two contracts for differences',
@@ -336,7 +336,7 @@ const Home: React.FC = () => {
               className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
             >
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Generating {detectRoute(inputValue).type.toLowerCase() === 'analysis' ? 'assist' : detectRoute(inputValue).type.toLowerCase()}
+                Generating {detectRoute(inputValue).type.toLowerCase() === 'analysis' ? 'assistant' : detectRoute(inputValue).type.toLowerCase()}
               </h2>
               
               <div className="space-y-4">

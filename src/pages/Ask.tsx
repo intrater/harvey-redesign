@@ -30,7 +30,7 @@ const Ask: React.FC = () => {
     }
   }, [query, location.state?.fromRecent]);
 
-  const assistExamples = [
+  const assistantExamples = [
     {
       icon: FileSearch,
       title: 'Summarize material changes from redlines',
@@ -69,7 +69,7 @@ const Ask: React.FC = () => {
     }
   ];
 
-  const handleExampleClick = (example: typeof assistExamples[0]) => {
+  const handleExampleClick = (example: typeof assistantExamples[0]) => {
     // Add to recent items
     addRecentItem({
       title: example.title.length > 30 ? example.title.substring(0, 30) + '...' : example.title,
@@ -242,7 +242,7 @@ const Ask: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {assistExamples.map((example, index) => (
+            {assistantExamples.map((example, index) => (
               <motion.button
                 key={index}
                 onClick={() => handleExampleClick(example)}

@@ -1,15 +1,15 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, MessageSquare, FileText, Zap, Archive, BookOpen, FileCheck, Settings, HelpCircle } from 'lucide-react';
+import { Home, MessageSquare, FileText, Zap, Archive, BookOpen, FileCheck, Settings, HelpCircle, X } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 import { getRelativeTime } from '../utils/time';
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { recentItems, activeItemId, setActiveItemId } = useRecent();
+  const { recentItems, activeItemId, setActiveItemId, removeRecentItem } = useRecent();
 
   const navItems = [
     { icon: Home, label: 'Home', path: '/' },
-    { icon: MessageSquare, label: 'Assist', path: '/ask' },
+    { icon: MessageSquare, label: 'Assistant', path: '/ask' },
     { icon: FileText, label: 'Draft', path: '/draft' },
     { icon: Zap, label: 'Automate', path: '/automate' },
   ];
@@ -26,29 +26,22 @@ const Sidebar = () => {
   ];
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
+    `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
       isActive
         ? 'bg-black text-white'
         : 'text-gray-700 hover:bg-gray-100'
     }`;
 
 
-  const getTypeColor = () => {
-    return 'bg-gray-100 text-gray-700';
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Analysis': return MessageSquare;
-      case 'Draft': return FileText;
-      case 'Workflow': return Zap;
-      default: return MessageSquare;
-    }
-  };
 
   const handleRecentItemClick = (item: any) => {
     setActiveItemId(item.id);
     navigate(item.route, { state: { query: item.fullQuery, fromRecent: true } });
+  };
+
+  const handleRemoveItem = (e: React.MouseEvent, itemId: string) => {
+    e.stopPropagation(); // Prevent triggering the item click
+    removeRecentItem(itemId);
   };
 
   return (
@@ -73,13 +66,13 @@ const Sidebar = () => {
 
         <div className="my-4 border-t border-gray-200"></div>
 
-        <div className="mb-3">
-          <h2 className="px-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Recent</h2>
+        <div className="mb-2">
+          <h2 className="px-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Recent</h2>
         </div>
 
-        <div className="space-y-1 mb-4">
+        <div className="space-y-0.5 mb-4">
           {recentItems.length === 0 ? (
-            <div className="px-3 py-2 text-xs text-gray-400">
+            <div className="px-3 py-2 text-xs text-gray-500">
               No recent conversations
             </div>
           ) : (
@@ -88,23 +81,24 @@ const Sidebar = () => {
                 <button
                   key={item.id}
                   onClick={() => handleRecentItemClick(item)}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                  className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors group ${
                     activeItemId === item.id
                       ? 'bg-gray-100 text-gray-900'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <div className="font-medium text-sm leading-tight truncate flex-1">
+                  <div className="space-y-0">
+                    <div className="flex items-center">
+                      <div className="text-sm font-medium leading-tight truncate pr-1" style={{maxWidth: 'calc(100% - 24px)'}}>
                         {item.title}
                       </div>
-                      <span className={`p-1.5 rounded-full ${getTypeColor()}`}>
-                        {(() => {
-                          const IconComponent = getTypeIcon(item.type);
-                          return <IconComponent size={12} />;
-                        })()}
-                      </span>
+                      <button
+                        onClick={(e) => handleRemoveItem(e, item.id)}
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 rounded-full transition-all ml-auto flex-shrink-0"
+                        title="Remove from recent"
+                      >
+                        <X size={12} className="text-gray-400 hover:text-gray-600" />
+                      </button>
                     </div>
                     <div className="text-xs text-gray-500">
                       {getRelativeTime(item.timestamp)}
@@ -113,7 +107,7 @@ const Sidebar = () => {
                 </button>
               ))}
               {recentItems.length > 0 && (
-                <button className="w-full text-left px-3 py-2 text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                <button className="w-full text-left px-3 py-2 text-xs text-gray-500 hover:text-gray-600 transition-colors">
                   View all history →
                 </button>
               )}
