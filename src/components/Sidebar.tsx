@@ -9,27 +9,28 @@ import {
   CheckSquare, 
   Gear, 
   Question, 
-  X 
+  X,
+  User
 } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
+import { useCommandPalette } from '../contexts/CommandPaletteContext';
 import { getRelativeTime } from '../utils/time';
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const { recentItems, activeItemId, setActiveItemId, removeRecentItem } = useRecent();
+  const { openCommandPalette } = useCommandPalette();
 
   const navItems = [
     { icon: House, label: 'Home', path: '/' },
-    { icon: ChatCircle, label: 'Assistant', path: '/ask' },
+    { icon: User, label: 'Assistant', path: '/ask' },
     { icon: FileText, label: 'Draft', path: '/draft' },
     { icon: Lightning, label: 'Automate', path: '/automate' },
-  ];
-
-  const bottomItems = [
     { icon: Archive, label: 'Vault', path: '/vault' },
     { icon: BookOpen, label: 'Library', path: '/library' },
     { icon: CheckSquare, label: 'Guidance', path: '/guidance' },
   ];
+
 
   const utilityItems = [
     { icon: Gear, label: 'Settings', path: '/settings' },
@@ -37,18 +38,18 @@ const Sidebar = () => {
   ];
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+    `flex items-center gap-3 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
       isActive
-        ? 'bg-black text-white'
+        ? 'text-gray-900'
         : 'text-gray-700 hover:bg-gray-100'
     }`;
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'Analysis': return ChatCircle;
+      case 'Analysis': return User;
       case 'Draft': return FileText;
       case 'Workflow': return Lightning;
-      default: return ChatCircle;
+      default: return User;
     }
   };
 
@@ -78,8 +79,12 @@ const Sidebar = () => {
               to={item.path}
               className={navLinkClasses}
             >
-              <item.icon size={20} weight="regular" />
-              <span>{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  <item.icon size={20} weight={isActive ? "fill" : "regular"} />
+                  <span>{item.label}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </div>
@@ -107,7 +112,7 @@ const Sidebar = () => {
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="space-y-0">
+                  <div className="space-y-1">
                     <div className="flex items-center">
                       <div className="text-sm font-medium leading-tight truncate pr-1" style={{maxWidth: 'calc(100% - 24px)'}}>
                         {item.title}
@@ -120,10 +125,10 @@ const Sidebar = () => {
                         <X size={14} weight="bold" className="text-gray-400 hover:text-gray-600" />
                       </button>
                     </div>
-                    <div className="text-xs text-gray-500 flex items-center gap-1">
+                    <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-600">
                       {(() => {
                         const IconComponent = getTypeIcon(item.type);
-                        return <IconComponent size={12} weight="fill" className="text-gray-400" />;
+                        return <IconComponent size={10} weight="fill" className="text-black" />;
                       })()}
                       <span>{getRelativeTime(item.timestamp)}</span>
                     </div>
@@ -141,23 +146,24 @@ const Sidebar = () => {
           )}
         </div>
 
-        <div className="border-t border-gray-200 pt-2">
-          <div className="space-y-1">
-            {bottomItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={navLinkClasses}
-              >
-                <item.icon size={20} weight="regular" />
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-          </div>
-        </div>
       </nav>
 
-      <div className="mt-auto p-3 border-t border-gray-200">
+      <div className="mt-auto p-3">
+        {/* Ask CTA */}
+        <div className="mb-3">
+          <button
+            onClick={openCommandPalette}
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-medium"
+          >
+            <span>Ask</span>
+            <div className="flex items-center gap-0.5 text-xs text-gray-500">
+              <span className="px-1.5 py-0.5 border border-gray-400 rounded text-xs">⌘</span>
+              <span className="text-gray-400">+</span>
+              <span className="px-1.5 py-0.5 border border-gray-400 rounded text-xs">K</span>
+            </div>
+          </button>
+        </div>
+
         <div className="space-y-1">
           {utilityItems.map((item) => (
             <NavLink
@@ -165,8 +171,12 @@ const Sidebar = () => {
               to={item.path}
               className={navLinkClasses}
             >
-              <item.icon size={20} weight="regular" />
-              <span>{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  <item.icon size={20} weight={isActive ? "fill" : "regular"} />
+                  <span>{item.label}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, ChatCircle, Lightning, Paperclip, SlidersHorizontal, Check, BookmarkSimple, X, CaretDown } from 'phosphor-react';
+import { FileText, ChatCircle, Lightning, Paperclip, SlidersHorizontal, Check, BookmarkSimple, X, Database } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -14,6 +14,7 @@ const Home: React.FC = () => {
   const [isPromptsModalOpen, setIsPromptsModalOpen] = useState(false);
   const [activePromptsTab, setActivePromptsTab] = useState<'private' | 'team' | 'harvey'>('private');
   const [selectedPrompt, setSelectedPrompt] = useState<{title: string, prompt: string} | null>(null);
+  const [cursorVisible, setCursorVisible] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const { addRecentItem, setActiveItemId } = useRecent();
@@ -32,6 +33,13 @@ const Home: React.FC = () => {
       setPlaceholder((prev) => (prev + 1) % placeholders.length);
     }, 3000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setCursorVisible((prev) => !prev);
+    }, 530); // More realistic cursor blink timing
+    return () => clearInterval(cursorInterval);
   }, []);
 
   useEffect(() => {
@@ -242,7 +250,7 @@ const Home: React.FC = () => {
       >
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-semibold text-gray-900">
-            How can Harvey help you today?
+            How can Harvey help you today, John?
           </h1>
         </div>
 
@@ -260,29 +268,47 @@ const Home: React.FC = () => {
             }
           }}
         >
-          <textarea
-            ref={textareaRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit();
-              }
-            }}
-            placeholder={placeholders[placeholder]}
-            disabled={isLoading}
-            className={`w-full min-h-[120px] p-4 pb-14 text-base border-2 border-black rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all bg-gray-50 ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            rows={1}
-          />
+          <div className="relative">
+            <textarea
+              ref={textareaRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              placeholder=""
+              disabled={isLoading}
+              className={`w-full min-h-[120px] p-4 pb-14 text-base rounded-lg resize-none focus:outline-none focus:ring-1 focus:ring-gray-400 transition-all bg-gray-100 ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              rows={1}
+            />
+            
+            {/* Custom placeholder with blinking cursor */}
+            {!inputValue && (
+              <div className="absolute top-4 left-4 pointer-events-none text-base text-gray-400">
+                <span className="inline-flex items-center">
+                  <span 
+                    className={`w-0.5 h-5 bg-gray-400 mr-1 transition-opacity duration-0 ${
+                      cursorVisible ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    style={{width: '1.5px'}}
+                  ></span>
+                  {placeholders[placeholder]}
+                </span>
+              </div>
+            )}
+          </div>
           
           {/* Bottom Left Utility Icons */}
           <div className="absolute bottom-4 left-4 flex gap-1">
             <button
               type="button"
               className="p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+              title="Attach files"
               onClick={() => {
                 // TODO: Add file upload functionality
                 console.log('File upload clicked');
@@ -294,20 +320,25 @@ const Home: React.FC = () => {
             <button
               type="button"
               className="p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+              title="Choose source"
+              onClick={() => {
+                // TODO: Add source functionality
+                console.log('Source clicked');
+              }}
+            >
+              <Database size={18} weight="regular" />
+            </button>
+            
+            <button
+              type="button"
+              className="p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
+              title="Settings"
               onClick={() => {
                 // TODO: Add settings functionality
                 console.log('Settings clicked');
               }}
             >
               <SlidersHorizontal size={18} weight="regular" />
-            </button>
-
-            <button
-              type="button"
-              className="p-1.5 text-gray-400 hover:text-black rounded-md transition-colors"
-              onClick={() => setIsPromptsModalOpen(true)}
-            >
-              <BookmarkSimple size={18} weight="regular" />
             </button>
           </div>
           
@@ -335,7 +366,7 @@ const Home: React.FC = () => {
                   disabled={!inputValue.trim()}
                   className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
                     !inputValue.trim() 
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
                       : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
                   }`}
                 >
@@ -366,14 +397,6 @@ const Home: React.FC = () => {
           ))}
         </motion.div>
 
-        <motion.p 
-          className="text-center text-sm text-gray-500 mt-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          Not sure where to start? <button className="text-black hover:underline">Get some suggestions by browsing the library</button>
-        </motion.p>
       </motion.div>
 
       <AnimatePresence>
