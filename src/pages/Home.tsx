@@ -241,7 +241,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4 md:p-8 pt-[15vh]">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8 -mt-16">
       <motion.div 
         className="w-full max-w-[600px] space-y-8"
         initial={{ opacity: 0, y: 20 }}
