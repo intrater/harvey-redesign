@@ -305,6 +305,11 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           onClick={(e) => e.stopPropagation()}
         >
           <form onSubmit={handleSubmit} className="border-b border-gray-200 p-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900">
+                How can Harvey help you today, John?
+              </h2>
+            </div>
             <div className="relative">
               <div className="relative">
                 <textarea
