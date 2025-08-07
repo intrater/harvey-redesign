@@ -252,6 +252,12 @@ const Home: React.FC = () => {
           <h1 className="text-4xl font-semibold text-gray-900">
             How can Harvey help you today, John?
           </h1>
+          <p className="text-sm text-gray-600">
+            Harvey is trained on proprietary legal datasets such as U.S. case law, statutes, and LexisNexis{' '}
+            <a href="#" className="text-blue-600 hover:text-blue-800 underline">
+              (learn more)
+            </a>
+          </p>
         </div>
 
         <motion.form 
