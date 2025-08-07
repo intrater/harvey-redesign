@@ -1,184 +1,288 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, FileText, Scale, BookOpen, Paperclip, CheckCircle } from 'lucide-react';
+import { MessageSquare, FileSearch, Scale, TrendingUp, ArrowRight } from 'lucide-react';
+import { useRecent } from '../contexts/RecentContext';
+import { useCommandPalette } from '../contexts/CommandPaletteContext';
 
 const Ask: React.FC = () => {
   const location = useLocation();
-  const query = location.state?.query || '';
-  const [showResults, setShowResults] = useState(false);
-
-  const isDepositionQuery = query.toLowerCase().includes('deposition') || 
-                           query.toLowerCase().includes('summarize');
+  const navigate = useNavigate();
+  const { addRecentItem, setActiveItemId } = useRecent();
+  const { openCommandPalette } = useCommandPalette();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const query = location.state?.query;
 
   useEffect(() => {
-    if (query) {
-      // Simulate analysis delay
-      const timer = setTimeout(() => {
-        setShowResults(true);
-      }, 2500);
-      return () => clearTimeout(timer);
+    // Clear active item when visiting ask page directly
+    setActiveItemId(null);
+  }, [setActiveItemId]);
+
+  useEffect(() => {
+    if (query && !location.state?.fromRecent) {
+      setIsLoading(true);
+      
+      // Simulate analysis workflow
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
     }
-  }, [query]);
+  }, [query, location.state?.fromRecent]);
 
-  const depositionSummary = [
-    "Witness confirmed employment at TechCorp from January 2020 to March 2023",
-    "Disclosed signing a non-compete agreement but claims it was never properly explained",
-    "Admitted to downloading client contact lists before resignation",
-    "Stated that supervisor explicitly approved working on competing projects",
-    "Revealed ongoing communications with former colleagues about proprietary methods"
+  const assistExamples = [
+    {
+      icon: FileSearch,
+      title: 'Summarize material changes from redlines',
+      description: 'Get a clear overview of what changed between document versions',
+      category: 'Document Analysis'
+    },
+    {
+      icon: Scale,
+      title: 'Analyze key provisions in this agreement',
+      description: 'Identify and explain the most important terms and conditions',
+      category: 'Contract Review'
+    },
+    {
+      icon: MessageSquare,
+      title: 'Compare these two contracts for differences',
+      description: 'Side-by-side analysis highlighting variations and implications',
+      category: 'Document Comparison'
+    },
+    {
+      icon: FileSearch,
+      title: 'Extract all defined terms from this document',
+      description: 'Compile a comprehensive list of definitions and their meanings',
+      category: 'Document Analysis'
+    },
+    {
+      icon: Scale,
+      title: 'Identify potential risks in this clause',
+      description: 'Spot legal and business risks with mitigation suggestions',
+      category: 'Risk Assessment'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Assess market standard terms vs. this agreement',
+      description: 'Benchmark against industry practices and standards',
+      category: 'Market Analysis'
+    }
   ];
 
-  const features = [
-    { icon: Search, title: 'Legal Research', description: 'Search through millions of cases and statutes' },
-    { icon: FileText, title: 'Document Analysis', description: 'Extract key information from legal documents' },
-    { icon: Scale, title: 'Case Law', description: 'Find relevant precedents and citations' },
-    { icon: BookOpen, title: 'Regulatory Guidance', description: 'Navigate complex regulatory frameworks' }
-  ];
+  const handleExampleClick = (example: typeof assistExamples[0]) => {
+    // Add to recent items
+    addRecentItem({
+      title: example.title.length > 30 ? example.title.substring(0, 30) + '...' : example.title,
+      type: 'Analysis',
+      fullQuery: example.title,
+      route: '/ask',
+    });
 
-  return (
-    <motion.div 
-      className="p-8 max-w-5xl mx-auto"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Analysis Assistant</h1>
-      <p className="text-gray-600 mb-8">
-        Ask Harvey questions about legal topics, case law, and regulations. Get instant, accurate answers powered by AI.
-      </p>
+    setIsLoading(true);
+    
+    // Simulate workflow
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  };
 
-      {query && (
-        <motion.div 
-          className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 shadow-sm"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="flex items-start gap-3">
-            <div className="flex-1">
-              <h2 className="text-sm font-medium text-gray-700 mb-1">Context:</h2>
-              <p className="text-gray-900 mb-3">{query}</p>
-              {isDepositionQuery && (
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                  <Paperclip size={14} />
-                  deposition_transcript.pdf
-                </div>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      <AnimatePresence mode="wait">
-        {!showResults ? (
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-center flex-1">
           <motion.div
-            key="loading"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-6"
+            className="text-center"
           >
-            <div className="grid grid-cols-2 gap-6">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200 shadow-sm"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                >
-                  <feature.icon className="w-8 h-8 text-gray-700 mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                  <p className="text-sm text-gray-600">{feature.description}</p>
-                </motion.div>
-              ))}
+            <div className="mb-4">
+              <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin mx-auto"></div>
             </div>
-
-            <motion.div 
-              className="bg-blue-50 border border-blue-200 rounded-lg p-6 shadow-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-            >
-              <h3 className="font-semibold text-blue-900 mb-2">Analysis In Progress</h3>
-              <p className="text-blue-800">
-                Harvey is analyzing your request and preparing comprehensive results...
-                <motion.span
-                  animate={{ opacity: [1, 0.5, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="ml-1"
-                >
-                  ●●●
-                </motion.span>
-              </p>
-            </motion.div>
+            <p className="text-gray-600">Preparing legal analysis...</p>
           </motion.div>
-        ) : (
+        </div>
+      </div>
+    );
+  }
+
+  if (query && !location.state?.fromRecent) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">Analysis Results</h1>
+              <p className="text-sm text-gray-600 mt-1">Based on: "{query}"</p>
+            </div>
+            <div className="flex gap-2">
+              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                View Details
+              </button>
+              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                Share
+              </button>
+              <button className="px-3 py-1.5 text-sm bg-black text-white rounded-md hover:bg-gray-800">
+                Export
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
           <motion.div
-            key="results"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6"
+            className="max-w-4xl mx-auto space-y-6"
           >
-            <motion.div 
-              className="bg-green-50 border border-green-200 rounded-lg p-6 shadow-sm"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <h3 className="font-semibold text-green-900">Analysis Complete</h3>
-              </div>
-              <p className="text-green-800 text-sm">
-                Successfully analyzed deposition transcript and extracted key information.
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Executive Summary</h2>
+              <p className="text-gray-700 leading-relaxed">
+                Based on my analysis of the document, I've identified several key areas that require attention. 
+                The agreement contains standard commercial terms with some notable deviations from market practice 
+                in the liability and termination clauses.
               </p>
-            </motion.div>
+            </div>
 
-            {isDepositionQuery && (
-              <motion.div
-                className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <h3 className="font-semibold text-gray-900 mb-4">Key Points from Deposition</h3>
-                <div className="space-y-3">
-                  {depositionSummary.map((point, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.6 + index * 0.1 }}
-                      className="flex items-start gap-3"
-                    >
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
-                      <p className="text-gray-700 text-sm leading-relaxed">{point}</p>
-                    </motion.div>
-                  ))}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Key Findings</h2>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">High Risk: Unlimited Liability Clause</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Section 8.3 contains unlimited liability terms that could expose significant financial risk.
+                    </p>
+                  </div>
                 </div>
-                
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.5 }}
-                  className="mt-6 pt-4 border-t border-gray-200"
-                >
-                  <h4 className="font-medium text-gray-900 mb-2">Recommended Next Steps</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Review non-compete agreement for enforceability</li>
-                    <li>• Investigate extent of proprietary information accessed</li>
-                    <li>• Consider requesting forensic analysis of defendant's devices</li>
+                <div className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2 flex-shrink-0"></div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Medium Risk: Termination Rights</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Termination clause allows counterparty broad discretionary termination rights.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Low Risk: IP Provisions</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Intellectual property clauses align with standard market terms.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 rounded-lg border border-green-200 p-6">
+              <div className="flex items-start gap-3">
+                <MessageSquare className="text-green-600 mt-1" size={20} />
+                <div>
+                  <h2 className="text-lg font-semibold text-green-900 mb-2">AI Recommendations</h2>
+                  <ul className="space-y-2 text-sm text-green-800">
+                    <li>• Consider adding liability caps to limit financial exposure</li>
+                    <li>• Negotiate mutual termination rights for better balance</li>
+                    <li>• Request additional notice period for termination events</li>
+                    <li>• Add specific carve-outs for IP indemnification</li>
                   </ul>
-                </motion.div>
-              </motion.div>
-            )}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Next Steps</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => navigate('/draft', { state: { query: `Draft liability cap clause based on analysis of: ${query}` } })}
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                >
+                  <FileSearch className="text-gray-400 mb-2" size={20} />
+                  <h3 className="font-medium text-gray-900">Draft Liability Cap</h3>
+                  <p className="text-sm text-gray-600">Create protective liability language</p>
+                </button>
+                <button 
+                  onClick={() => navigate('/automate', { state: { query: `Contract review checklist for: ${query}` } })}
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                >
+                  <Scale className="text-gray-400 mb-2" size={20} />
+                  <h3 className="font-medium text-gray-900">Review Checklist</h3>
+                  <p className="text-sm text-gray-600">Generate comprehensive review workflow</p>
+                </button>
+              </div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="border-b border-gray-200 p-6">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold text-gray-900 mb-2">Legal Assistant</h1>
+            <p className="text-gray-600">Get AI-powered analysis and insights for your legal documents</p>
+          </div>
+          <button
+            onClick={openCommandPalette}
+            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+          >
+            Ask Harvey
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {assistExamples.map((example, index) => (
+              <motion.button
+                key={index}
+                onClick={() => handleExampleClick(example)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left hover:shadow-md transition-all group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} />
+                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={16} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 leading-tight">{example.title}</h3>
+                <p className="text-sm text-gray-600 mb-3">{example.description}</p>
+                <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
+                  {example.category}
+                </span>
+              </motion.button>
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mt-12 text-center"
+          >
+            <p className="text-sm text-gray-500 mb-4">
+              Need something specific? Use the composer on the homepage for custom queries
+            </p>
+            <button
+              onClick={() => navigate('/')}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <MessageSquare size={16} />
+              Go to Homepage Composer
+            </button>
+          </motion.div>
+        </div>
+      </div>
+    </div>
   );
 };
 

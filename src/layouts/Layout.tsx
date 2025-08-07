@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import CommandPalette from '../components/CommandPalette';
 import { useRecent } from '../contexts/RecentContext';
+import { CommandPaletteProvider } from '../contexts/CommandPaletteContext';
 
 const Layout = () => {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -34,7 +35,7 @@ const Layout = () => {
   }, [clearRecentItems]);
 
   return (
-    <>
+    <CommandPaletteProvider openCommandPalette={() => setIsCommandPaletteOpen(true)}>
       <div className="flex h-screen bg-white overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden lg:flex lg:flex-shrink-0">
@@ -101,7 +102,7 @@ const Layout = () => {
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
       />
-    </>
+    </CommandPaletteProvider>
   );
 };
 

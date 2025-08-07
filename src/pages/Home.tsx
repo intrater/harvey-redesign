@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, MessageSquare, Zap, Paperclip, X, SlidersHorizontal } from 'lucide-react';
+import { FileText, MessageSquare, Zap, Paperclip, X, SlidersHorizontal, Check } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
   const [placeholder, setPlaceholder] = useState(0);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingPhase, setLoadingPhase] = useState('thinking');
+  const [currentStep, setCurrentStep] = useState(0);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -54,6 +54,35 @@ const Home: React.FC = () => {
     return { route: '/ask', type: 'Analysis' };
   };
 
+  const getWorkflowSteps = (type: string) => {
+    switch (type) {
+      case 'Analysis':
+        return [
+          'Analyzing your request',
+          'Preparing legal research tools',
+          'Setting up assist environment'
+        ];
+      case 'Draft':
+        return [
+          'Understanding document requirements',
+          'Gathering relevant templates',
+          'Preparing drafting environment'
+        ];
+      case 'Workflow':
+        return [
+          'Processing automation parameters',
+          'Loading automation tools',
+          'Initializing automation environment'
+        ];
+      default:
+        return [
+          'Processing your request',
+          'Preparing tools',
+          'Setting up environment'
+        ];
+    }
+  };
+
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputValue.trim() || isLoading) return;
@@ -69,27 +98,31 @@ const Home: React.FC = () => {
     });
 
     setIsLoading(true);
-    setLoadingPhase('thinking');
+    setCurrentStep(0);
 
-    // First phase: Thinking
-    setTimeout(() => {
-      setLoadingPhase('preparing');
-    }, 1000);
+    const steps = getWorkflowSteps(type);
 
-    // Second phase: Navigate
+    // Progress through steps
+    steps.forEach((_, index) => {
+      setTimeout(() => {
+        setCurrentStep(index + 1);
+      }, (index + 1) * 800);
+    });
+
+    // Navigate after all steps complete
     setTimeout(() => {
       navigate(route, { state: { query: inputValue } });
-    }, 2000);
+    }, steps.length * 800 + 500);
   };
 
   const quickActions = [
-    { icon: MessageSquare, label: 'Ask', value: 'ask' },
+    { icon: MessageSquare, label: 'Assist', value: 'assist' },
     { icon: FileText, label: 'Draft', value: 'draft' },
     { icon: Zap, label: 'Automate', value: 'automate' }
   ];
 
   const modalOptions = {
-    ask: [
+    assist: [
       'Summarize material changes from redlines',
       'Analyze key provisions in this agreement',
       'Compare these two contracts for differences',
@@ -196,25 +229,7 @@ const Home: React.FC = () => {
           </button>
           
           <AnimatePresence mode="wait">
-            {isLoading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute bottom-2 right-3 text-sm text-gray-600"
-              >
-                {loadingPhase === 'thinking' ? (
-                  <span>
-                    Thinking<AnimatedDots />
-                  </span>
-                ) : (
-                  <span>
-                    Preparing {detectRoute(inputValue).type} environment<AnimatedDots />
-                  </span>
-                )}
-              </motion.div>
-            ) : (
+            {!isLoading && (
               <motion.button
                 key="submit-button"
                 type="button"
@@ -302,6 +317,75 @@ const Home: React.FC = () => {
               </div>
             </motion.div>
           </React.Fragment>
+        )}
+      </AnimatePresence>
+
+      {/* Loading Modal */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black bg-opacity-50 flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+            >
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                Generating {detectRoute(inputValue).type.toLowerCase() === 'analysis' ? 'assist' : detectRoute(inputValue).type.toLowerCase()}
+              </h2>
+              
+              <div className="space-y-4">
+                {getWorkflowSteps(detectRoute(inputValue).type).map((step, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0.3 }}
+                    animate={{ 
+                      opacity: index < currentStep ? 1 : 0.3,
+                    }}
+                    className="flex items-center gap-3"
+                  >
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      index < currentStep 
+                        ? 'bg-green-500 border-green-500' 
+                        : 'border-gray-300'
+                    }`}>
+                      {index < currentStep && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.2 }}
+                        >
+                          <Check size={12} className="text-white" />
+                        </motion.div>
+                      )}
+                    </div>
+                    <span className={`text-sm ${
+                      index < currentStep ? 'text-gray-900' : 'text-gray-500'
+                    }`}>
+                      {step}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+              
+              <div className="mt-8 flex justify-center">
+                <button
+                  onClick={() => {
+                    setIsLoading(false);
+                    setCurrentStep(0);
+                  }}
+                  className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

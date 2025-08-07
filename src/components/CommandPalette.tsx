@@ -103,7 +103,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const actions: CommandItem[] = [
     {
       id: 'new-analysis',
-      title: 'Ask',
+      title: 'Assist',
       subtitle: 'Summarize Material Changes from Redlines',
       icon: 'MessageSquare',
       section: 'actions',

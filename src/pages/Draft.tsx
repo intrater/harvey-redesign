@@ -1,240 +1,283 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, PenTool, FileCheck, Zap, Save, Share2, Eye, Edit3 } from 'lucide-react';
+import { FileText, PenTool, Scale, Briefcase, ArrowRight, MessageSquare, Save, Share2, Eye } from 'lucide-react';
+import { useRecent } from '../contexts/RecentContext';
+import { useCommandPalette } from '../contexts/CommandPaletteContext';
 
 const Draft: React.FC = () => {
   const location = useLocation();
-  const query = location.state?.query || '';
+  const navigate = useNavigate();
+  const { addRecentItem, setActiveItemId } = useRecent();
+  const { openCommandPalette } = useCommandPalette();
+  const [isLoading, setIsLoading] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
-
-  const isAgreementQuery = query.toLowerCase().includes('agreement') || 
-                          query.toLowerCase().includes('consulting') ||
-                          query.toLowerCase().includes('contract');
+  
+  const query = location.state?.query;
 
   useEffect(() => {
-    if (query && isAgreementQuery) {
-      // Simulate draft preparation delay
-      const timer = setTimeout(() => {
-        setShowEditor(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [query, isAgreementQuery]);
+    // Clear active item when visiting draft page directly
+    setActiveItemId(null);
+  }, [setActiveItemId]);
 
-  const documentTypes = [
-    { icon: FileText, title: 'Contracts', description: 'Service agreements, NDAs, employment contracts' },
-    { icon: PenTool, title: 'Legal Briefs', description: 'Motions, memoranda, and court filings' },
-    { icon: FileCheck, title: 'Corporate Documents', description: 'Bylaws, resolutions, and governance docs' },
-    { icon: Zap, title: 'Quick Templates', description: 'Common forms and standard agreements' }
+  useEffect(() => {
+    if (query && !location.state?.fromRecent) {
+      setIsLoading(true);
+      
+      // Simulate draft preparation
+      setTimeout(() => {
+        setIsLoading(false);
+        setShowEditor(true);
+      }, 3000);
+    }
+  }, [query, location.state?.fromRecent]);
+
+  const draftExamples = [
+    {
+      icon: FileText,
+      title: 'Draft an interim operating covenants memo',
+      description: 'Create comprehensive operating guidelines for interim periods',
+      category: 'Corporate'
+    },
+    {
+      icon: PenTool,
+      title: 'Create a standard NDA for a new client',
+      description: 'Generate customizable non-disclosure agreement template',
+      category: 'Contracts'
+    },
+    {
+      icon: Scale,
+      title: 'Write a cease and desist letter',
+      description: 'Professional demand letter with legal backing',
+      category: 'Litigation'
+    },
+    {
+      icon: Briefcase,
+      title: 'Generate board resolution minutes',
+      description: 'Formal minutes template for board decisions',
+      category: 'Corporate'
+    },
+    {
+      icon: FileText,
+      title: 'Prepare a contract amendment',
+      description: 'Modify existing agreements with proper legal language',
+      category: 'Contracts'
+    },
+    {
+      icon: PenTool,
+      title: 'Draft employment agreement terms',
+      description: 'Comprehensive employment contract provisions',
+      category: 'Employment'
+    }
   ];
 
-  const sampleAgreement = `CONSULTING AGREEMENT
+  const handleExampleClick = (example: typeof draftExamples[0]) => {
+    // Add to recent items
+    addRecentItem({
+      title: example.title.length > 30 ? example.title.substring(0, 30) + '...' : example.title,
+      type: 'Draft',
+      fullQuery: example.title,
+      route: '/draft',
+    });
 
-This Consulting Agreement ("Agreement") is entered into on [DATE], between [COMPANY NAME], a [STATE] corporation ("Company"), and [CONSULTANT NAME], an independent contractor ("Consultant").
+    setIsLoading(true);
+    
+    // Simulate workflow
+    setTimeout(() => {
+      setIsLoading(false);
+      setShowEditor(true);
+    }, 3000);
+  };
 
-1. SERVICES
-Consultant agrees to provide consulting services as described in Exhibit A attached hereto and incorporated herein by reference ("Services").
+  const sampleDocument = `INTERIM OPERATING COVENANTS MEMORANDUM
 
-2. COMPENSATION
-Company shall pay Consultant a fee of $[AMOUNT] per [HOUR/PROJECT] for the Services. Payment shall be made within thirty (30) days of receipt of invoice.
+TO: Board of Directors
+FROM: Legal Department  
+DATE: [Current Date]
+RE: Interim Operating Covenants During Transaction Period
 
-3. TERM
-This Agreement shall commence on [START DATE] and continue until [END DATE], unless earlier terminated in accordance with this Agreement.
+This memorandum outlines the interim operating covenants that [COMPANY NAME] ("Company") must observe during the pending transaction period to ensure compliance with the merger agreement dated [DATE].
 
-4. INDEPENDENT CONTRACTOR
-Consultant is an independent contractor and not an employee of Company. Consultant shall be solely responsible for all taxes, withholdings, and other statutory or contractual obligations.
+1. ORDINARY COURSE OF BUSINESS
+The Company shall conduct its business only in the ordinary course and in a manner consistent with past practice. Specifically, the Company shall:
 
-5. CONFIDENTIALITY
-Consultant acknowledges that during the course of this Agreement, Consultant may have access to certain confidential information of Company. Consultant agrees to maintain the confidentiality of such information.
+• Maintain existing customer and supplier relationships
+• Continue current marketing and promotional activities
+• Preserve employee relationships and maintain current compensation levels
+• Operate facilities in accordance with established practices
 
-6. INTELLECTUAL PROPERTY
-Any work product created by Consultant in the performance of the Services shall be deemed "work made for hire" and shall be owned by Company.
+2. RESTRICTED ACTIVITIES
+Without prior written consent from the acquiring party, the Company shall not:
 
-7. TERMINATION
-Either party may terminate this Agreement at any time with thirty (30) days written notice to the other party.
+• Incur indebtedness exceeding $[AMOUNT] individually or $[AMOUNT] in the aggregate
+• Enter into any material contracts outside the ordinary course of business
+• Make capital expenditures exceeding $[AMOUNT] individually
+• Modify employee compensation or benefit plans
+• Declare or pay dividends or distributions
 
-IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.
+3. REQUIRED NOTIFICATIONS
+The Company must provide prompt written notice of:
 
-COMPANY:                    CONSULTANT:
+• Any material adverse changes to business operations
+• Threatened or pending litigation
+• Loss of key customers representing more than [X]% of revenue
+• Departure of key management personnel
 
-_________________          _________________
-[NAME]                     [CONSULTANT NAME]
-[TITLE]                    
-Date: _________            Date: _________`;
+4. COMPLIANCE MONITORING
+Legal and finance teams will establish weekly monitoring procedures to ensure adherence to these covenants and will report any potential violations immediately to the Board.
 
-  return (
-    <motion.div 
-      className="p-8 max-w-6xl mx-auto"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Document Draft</h1>
-      <p className="text-gray-600 mb-8">
-        Create and edit legal documents with AI assistance. Generate contracts, briefs, and other legal documents efficiently.
-      </p>
+This memorandum shall remain in effect until the earlier of: (i) completion of the transaction, (ii) termination of the merger agreement, or (iii) written modification by the Board.`;
 
-      {query && (
-        <motion.div 
-          className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 shadow-sm"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h2 className="text-sm font-medium text-gray-700 mb-1">Context:</h2>
-          <p className="text-gray-900">{query}</p>
-        </motion.div>
-      )}
-
-      <AnimatePresence mode="wait">
-        {!showEditor ? (
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-center flex-1">
           <motion.div
-            key="loading"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-6"
+            className="text-center"
           >
-            <div className="grid grid-cols-2 gap-6">
-              {documentTypes.map((type, index) => (
-                <motion.div
-                  key={index}
-                  className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200 cursor-pointer shadow-sm"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <type.icon className="w-8 h-8 text-gray-700 mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">{type.title}</h3>
-                  <p className="text-sm text-gray-600">{type.description}</p>
-                </motion.div>
-              ))}
+            <div className="mb-4">
+              <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin mx-auto"></div>
             </div>
-
-            <motion.div 
-              className="bg-green-50 border border-green-200 rounded-lg p-6 shadow-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-            >
-              <h3 className="font-semibold text-green-900 mb-2">Preparing Draft Environment</h3>
-              <p className="text-green-800">
-                Harvey is setting up your document workspace with relevant templates and clauses...
-                <motion.span
-                  animate={{ opacity: [1, 0.5, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="ml-1"
-                >
-                  ●●●
-                </motion.span>
-              </p>
-            </motion.div>
+            <p className="text-gray-600">Preparing document draft...</p>
           </motion.div>
-        ) : (
+        </div>
+      </div>
+    );
+  }
+
+  if (showEditor) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">Document Draft</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                {query ? `Based on: "${query}"` : 'Legal Document Editor'}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                <Eye size={16} className="inline mr-1" />
+                Preview
+              </button>
+              <button className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                <Share2 size={16} className="inline mr-1" />
+                Share
+              </button>
+              <button className="px-3 py-1.5 text-sm bg-black text-white rounded-md hover:bg-gray-800">
+                <Save size={16} className="inline mr-1" />
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
           <motion.div
-            key="editor"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6"
+            className="max-w-4xl mx-auto"
           >
-            {/* Document Header */}
-            <motion.div
-              className="bg-white border border-gray-200 rounded-lg shadow-sm"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">consulting_agreement_draft.docx</h3>
-                    <p className="text-sm text-gray-500">Last modified just now • Auto-saved</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:shadow-sm transition-all">
-                      <Eye size={16} />
-                      Preview
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+              <textarea
+                className="w-full h-96 p-4 border border-gray-200 rounded-lg font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                defaultValue={sampleDocument}
+              />
+            </div>
+            
+            <div className="mt-6 bg-blue-50 rounded-lg border border-blue-200 p-4">
+              <div className="flex items-start gap-3">
+                <MessageSquare className="text-blue-600 mt-1" size={20} />
+                <div>
+                  <h3 className="font-medium text-blue-900 mb-2">AI Writing Assistant</h3>
+                  <p className="text-sm text-blue-800 mb-3">
+                    This draft has been generated based on your request. You can edit directly in the text area above or ask for specific modifications.
+                  </p>
+                  <div className="flex gap-2">
+                    <button className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                      Suggest Improvements
                     </button>
-                    <button className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:shadow-sm transition-all">
-                      <Share2 size={16} />
-                      Share
-                    </button>
-                    <button className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 hover:shadow-sm transition-all">
-                      <Save size={16} />
-                      Save
+                    <button className="px-3 py-1.5 text-xs border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50">
+                      Check Compliance
                     </button>
                   </div>
                 </div>
               </div>
-
-              {/* Toolbar */}
-              <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
-                <div className="flex items-center gap-4">
-                  <button className="inline-flex items-center gap-1 px-2 py-1 text-sm text-gray-600 hover:bg-gray-200 rounded transition-colors">
-                    <Edit3 size={14} />
-                    Edit
-                  </button>
-                  <div className="w-px h-4 bg-gray-300"></div>
-                  <select className="text-sm border-none bg-transparent focus:ring-0">
-                    <option>Normal Text</option>
-                    <option>Heading 1</option>
-                    <option>Heading 2</option>
-                  </select>
-                  <div className="w-px h-4 bg-gray-300"></div>
-                  <div className="flex items-center gap-2">
-                    <button className="p-1 text-gray-600 hover:bg-gray-200 rounded">B</button>
-                    <button className="p-1 text-gray-600 hover:bg-gray-200 rounded">I</button>
-                    <button className="p-1 text-gray-600 hover:bg-gray-200 rounded">U</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Document Editor */}
-              <div className="p-6">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="prose max-w-none"
-                >
-                  <textarea
-                    className="w-full h-96 p-6 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm leading-relaxed"
-                    value={sampleAgreement}
-                    readOnly
-                    style={{ fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", monospace' }}
-                  />
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* AI Suggestions Panel */}
-            <motion.div
-              className="bg-blue-50 border border-blue-200 rounded-lg p-6 shadow-sm"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <h4 className="font-semibold text-blue-900 mb-3">AI Suggestions</h4>
-              <div className="space-y-2">
-                <div className="text-sm text-blue-800">
-                  • Consider adding a dispute resolution clause (Section 8)
-                </div>
-                <div className="text-sm text-blue-800">
-                  • Specify deliverables and milestones in Exhibit A
-                </div>
-                <div className="text-sm text-blue-800">
-                  • Add governing law and jurisdiction clause
-                </div>
-              </div>
-            </motion.div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="border-b border-gray-200 p-6">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold text-gray-900 mb-2">Document Drafting</h1>
+            <p className="text-gray-600">Create and edit legal documents with AI-powered assistance</p>
+          </div>
+          <button
+            onClick={openCommandPalette}
+            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+          >
+            Ask Harvey
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {draftExamples.map((example, index) => (
+              <motion.button
+                key={index}
+                onClick={() => handleExampleClick(example)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left hover:shadow-md transition-all group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <example.icon className="text-gray-400 group-hover:text-gray-600 transition-colors" size={24} />
+                  <ArrowRight className="text-gray-300 group-hover:text-gray-500 transition-colors" size={16} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 leading-tight">{example.title}</h3>
+                <p className="text-sm text-gray-600 mb-3">{example.description}</p>
+                <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
+                  {example.category}
+                </span>
+              </motion.button>
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mt-12 text-center"
+          >
+            <p className="text-sm text-gray-500 mb-4">
+              Need to draft something custom? Use the composer on the homepage
+            </p>
+            <button
+              onClick={() => navigate('/')}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <MessageSquare size={16} />
+              Go to Homepage Composer
+            </button>
+          </motion.div>
+        </div>
+      </div>
+    </div>
   );
 };
 
