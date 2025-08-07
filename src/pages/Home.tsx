@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, MessageSquare, Zap, Paperclip } from 'lucide-react';
+import { FileText, MessageSquare, Zap, Paperclip, X } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -9,6 +9,8 @@ const Home: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState('thinking');
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const { addRecentItem, setActiveItemId } = useRecent();
@@ -81,13 +83,45 @@ const Home: React.FC = () => {
   };
 
   const quickActions = [
-    { icon: MessageSquare, label: 'Ask', text: 'Summarize Material Changes from Redlines' },
-    { icon: FileText, label: 'Draft', text: 'Draft an interim operating covenants memo' },
-    { icon: Zap, label: 'Automate', text: 'Automate a post closing timeline' }
+    { icon: MessageSquare, label: 'Ask', value: 'ask' },
+    { icon: FileText, label: 'Draft', value: 'draft' },
+    { icon: Zap, label: 'Automate', value: 'automate' }
   ];
 
-  const handleQuickAction = (text: string) => {
-    setInputValue(text);
+  const modalOptions = {
+    ask: [
+      'Summarize material changes from redlines',
+      'Analyze key provisions in this agreement',
+      'Compare these two contracts for differences',
+      'Extract all defined terms from this document',
+      'Identify potential risks in this clause'
+    ],
+    draft: [
+      'Draft an interim operating covenants memo',
+      'Create a standard NDA for a new client',
+      'Write a cease and desist letter',
+      'Generate board resolution minutes',
+      'Prepare a contract amendment'
+    ],
+    automate: [
+      'Automate a post closing timeline',
+      'Run due diligence checklist',
+      'Execute contract review workflow',
+      'Generate closing document set',
+      'Create matter status report'
+    ]
+  };
+
+  const handleQuickAction = (action: typeof quickActions[0], event: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setActiveModal(action.value);
+    // Store button position for modal positioning
+    setModalPosition({ top: rect.bottom + 8, left: rect.left });
+  };
+
+  const handleOptionSelect = (option: string) => {
+    setInputValue(option);
+    setActiveModal(null);
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -191,7 +225,7 @@ const Home: React.FC = () => {
         </motion.form>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-3"
+          className="flex gap-3 justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -199,16 +233,13 @@ const Home: React.FC = () => {
           {quickActions.map((action, index) => (
             <motion.button
               key={index}
-              onClick={() => handleQuickAction(action.text)}
+              onClick={(e) => handleQuickAction(action, e)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center justify-between gap-4 p-4 rounded-lg bg-white border-2 border-dashed border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all text-left"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all text-sm font-medium text-gray-700"
             >
-              <div>
-                <div className="font-medium text-sm text-gray-800 mb-0.5">{action.label}</div>
-                <div className="text-xs text-gray-600">{action.text}</div>
-              </div>
-              <action.icon size={20} className="text-gray-300 flex-shrink-0" />
+              <action.icon size={16} />
+              <span>{action.label}</span>
             </motion.button>
           ))}
         </motion.div>
@@ -222,6 +253,46 @@ const Home: React.FC = () => {
           Not sure where to start? <button className="text-black hover:underline">Get some suggestions by browsing the library</button>
         </motion.p>
       </motion.div>
+
+      <AnimatePresence>
+        {activeModal && (
+          <React.Fragment>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setActiveModal(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed z-50 bg-white rounded-lg shadow-lg border border-gray-200 w-96 p-2"
+              style={{
+                top: modalPosition.top,
+                left: modalPosition.left,
+              }}
+            >
+              <div className="px-1 py-2">
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide px-3 pb-2">
+                  {activeModal} examples
+                </div>
+              </div>
+              
+              <div className="py-1">
+                {modalOptions[activeModal as keyof typeof modalOptions]?.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleOptionSelect(option)}
+                    className="w-full text-left px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </React.Fragment>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

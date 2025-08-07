@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquare, FileText, Zap } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 import { getRelativeTime } from '../utils/time';
 
@@ -102,10 +103,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const actions: CommandItem[] = [
     {
       id: 'new-analysis',
-      title: 'New Analysis',
-      subtitle: 'Start a new legal analysis',
-      icon: '💬',
-      shortcut: `${cmdKey}⇧A`,
+      title: 'Ask',
+      subtitle: 'Summarize Material Changes from Redlines',
+      icon: 'MessageSquare',
       section: 'actions',
       action: () => {
         navigate('/ask');
@@ -114,10 +114,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     },
     {
       id: 'new-draft',
-      title: 'New Draft',
-      subtitle: 'Create a new document',
-      icon: '✏️',
-      shortcut: `${cmdKey}⇧D`,
+      title: 'Draft',
+      subtitle: 'Draft an interim operating covenants memo',
+      icon: 'FileText',
       section: 'actions',
       action: () => {
         navigate('/draft');
@@ -126,10 +125,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     },
     {
       id: 'run-workflow',
-      title: 'Run Workflow',
-      subtitle: 'Start an automated workflow',
-      icon: '⚡',
-      shortcut: `${cmdKey}⇧W`,
+      title: 'Automate',
+      subtitle: 'Automate a post closing timeline',
+      icon: 'Zap',
       section: 'actions',
       action: () => {
         navigate('/automate');
@@ -239,7 +237,17 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-base">{command.icon}</span>
+                  {title === 'Common Actions' ? (
+                    (() => {
+                      const IconComponent = command.icon === 'MessageSquare' ? MessageSquare 
+                        : command.icon === 'FileText' ? FileText 
+                        : command.icon === 'Zap' ? Zap 
+                        : null;
+                      return IconComponent ? <IconComponent size={18} className={isSelected ? 'text-white' : 'text-gray-700'} /> : <span className="text-base">{command.icon}</span>;
+                    })()
+                  ) : (
+                    <span className="text-base">{command.icon}</span>
+                  )}
                   <div>
                     <div className="text-sm font-medium">{command.title}</div>
                     {command.subtitle && (
