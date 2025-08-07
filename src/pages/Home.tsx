@@ -127,7 +127,7 @@ const Home: React.FC = () => {
   };
 
   const quickActions = [
-    { icon: ChatCircle, label: 'Assistant', value: 'assistant' },
+    { icon: ChatCircle, label: 'Assist', value: 'assistant' },
     { icon: FileText, label: 'Draft', value: 'draft' },
     { icon: Lightning, label: 'Automate', value: 'automate' }
   ];
