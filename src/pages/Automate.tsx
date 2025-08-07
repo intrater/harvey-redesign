@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Zap, ListChecks, Clock, RefreshCw, ArrowRight, MessageSquare, PlayCircle, CheckCircle, Settings } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 import { useCommandPalette } from '../contexts/CommandPaletteContext';
@@ -152,7 +152,7 @@ const Automate: React.FC = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Workflow Progress</h2>
               <div className="space-y-4">
-                {workflowSteps.map((step, index) => (
+                {workflowSteps.map((step) => (
                   <div key={step.id} className="flex items-center gap-4">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
                       step.status === 'completed' 

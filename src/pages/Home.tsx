@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, MessageSquare, Zap, Paperclip, X, SlidersHorizontal, Check } from 'lucide-react';
+import { FileText, MessageSquare, Zap, Paperclip, SlidersHorizontal, Check } from 'lucide-react';
 import { useRecent } from '../contexts/RecentContext';
 
 const Home: React.FC = () => {
@@ -392,17 +392,5 @@ const Home: React.FC = () => {
   );
 };
 
-const AnimatedDots: React.FC = () => {
-  const [dots, setDots] = useState('');
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDots((prev) => (prev.length >= 3 ? '' : prev + '.'));
-    }, 400);
-    return () => clearInterval(interval);
-  }, []);
-
-  return <span>{dots}</span>;
-};
 
 export default Home;
