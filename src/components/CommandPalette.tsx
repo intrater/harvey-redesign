@@ -17,7 +17,7 @@ interface CommandItem {
   icon: string;
   shortcut?: string;
   action: () => void;
-  section: 'suggested' | 'recent' | 'actions';
+  section: 'recent' | 'actions';
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
@@ -150,7 +150,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     subtitle: `${item.type} • ${getRelativeTime(item.timestamp)}`,
     icon: item.type === 'Analysis' ? 'User' : item.type === 'Draft' ? 'FileText' : 'Lightning',
     shortcut: index < 2 ? `${cmdKey}${index + 1}` : undefined,
-    section: index < 2 ? 'suggested' : 'recent',
+    section: 'recent',
     action: () => {
       setActiveItemId(item.id);
       navigate(item.route, { state: { query: item.fullQuery, fromRecent: true } });
@@ -158,14 +158,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     },
   }));
 
-  const suggestedCommands = recentCommands.filter(cmd => cmd.section === 'suggested');
-  const recentOnlyCommands = recentCommands.filter(cmd => cmd.section === 'recent');
-
-  const allCommands = [...suggestedCommands, ...recentOnlyCommands, ...actions];
+  const allCommands = [...recentCommands, ...actions];
 
   const groupedCommands = {
-    suggested: suggestedCommands,
-    recent: recentOnlyCommands,
+    recent: recentCommands,
     actions: actions,
   };
 
@@ -203,14 +199,14 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         case '1':
           if (e.metaKey || e.ctrlKey) {
             e.preventDefault();
-            const cmd = suggestedCommands[0];
+            const cmd = recentCommands[0];
             if (cmd) cmd.action();
           }
           break;
         case '2':
           if (e.metaKey || e.ctrlKey) {
             e.preventDefault();
-            const cmd = suggestedCommands[1];
+            const cmd = recentCommands[1];
             if (cmd) cmd.action();
           }
           break;
@@ -219,7 +215,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, selectedIndex, allCommands, suggestedCommands, onClose]);
+  }, [isOpen, selectedIndex, allCommands, recentCommands, onClose]);
 
   const renderSection = (title: string, commands: CommandItem[], startIndex: number) => {
     if (commands.length === 0) return null;
@@ -427,12 +423,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           
           <div className="flex-1 overflow-y-auto">
             <div className="py-2">
-              {renderSection('Suggested', groupedCommands.suggested, (() => {
-                const index = currentIndex;
-                currentIndex += groupedCommands.suggested.length;
-                return index;
-              })())}
-              
               {renderSection('Recent', groupedCommands.recent, (() => {
                 const index = currentIndex;
                 currentIndex += groupedCommands.recent.length;
