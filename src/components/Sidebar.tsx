@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   House, 
-  ChatCircle,
   FileText,
   Lightning,
   Archive, 
