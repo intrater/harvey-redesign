@@ -67,17 +67,8 @@ const Sidebar = () => {
 
   return (
     <aside className="w-60 h-screen bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-4 flex items-center justify-between">
+      <div className="p-4">
         <h1 className="text-xl font-semibold">Harvey</h1>
-        <button
-          className="p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-colors"
-          title="Search"
-          onClick={() => {
-            console.log('Search clicked');
-          }}
-        >
-          <MagnifyingGlass size={20} weight="regular" />
-        </button>
       </div>
 
       <nav className="flex-1 px-3 overflow-y-auto">
@@ -158,11 +149,11 @@ const Sidebar = () => {
       </nav>
 
       <div className="mt-auto p-3">
-        {/* Ask CTA */}
-        <div className="mb-3">
+        {/* Ask and Search CTAs */}
+        <div className="mb-3 flex gap-2">
           <button
             onClick={openCommandPalette}
-            className="w-full flex items-center justify-between px-3 py-2.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-medium"
+            className="flex-1 flex items-center justify-between px-3 py-2.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-medium"
           >
             <span>Ask</span>
             <div className="flex items-center gap-0.5 text-xs text-gray-500">
@@ -170,6 +161,16 @@ const Sidebar = () => {
               <span className="text-gray-400">+</span>
               <span className="px-1.5 py-0.5 border border-gray-400 rounded text-xs">K</span>
             </div>
+          </button>
+          
+          <button
+            onClick={() => {
+              console.log('Search clicked');
+            }}
+            className="px-3 py-2.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+            title="Search"
+          >
+            <MagnifyingGlass size={16} weight="regular" />
           </button>
         </div>
 
