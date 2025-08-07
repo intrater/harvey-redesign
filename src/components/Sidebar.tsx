@@ -37,7 +37,7 @@ const Sidebar = () => {
   ];
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+    `flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
       isActive
         ? 'text-gray-900'
         : 'text-gray-700 hover:bg-gray-100'
