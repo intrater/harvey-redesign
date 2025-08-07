@@ -9,7 +9,8 @@ import {
   Gear, 
   Question, 
   X,
-  User
+  User,
+  MagnifyingGlass
 } from 'phosphor-react';
 import { useRecent } from '../contexts/RecentContext';
 import { useCommandPalette } from '../contexts/CommandPaletteContext';
@@ -66,8 +67,17 @@ const Sidebar = () => {
 
   return (
     <aside className="w-60 h-screen bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-4">
+      <div className="p-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Harvey</h1>
+        <button
+          className="p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-colors"
+          title="Search"
+          onClick={() => {
+            console.log('Search clicked');
+          }}
+        >
+          <MagnifyingGlass size={20} weight="regular" />
+        </button>
       </div>
 
       <nav className="flex-1 px-3 overflow-y-auto">
