@@ -44,14 +44,6 @@ const Sidebar = () => {
         : 'text-gray-700 hover:bg-gray-100'
     }`;
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Analysis': return User;
-      case 'Draft': return FileText;
-      case 'Workflow': return Lightning;
-      default: return User;
-    }
-  };
 
 
 
@@ -126,10 +118,6 @@ const Sidebar = () => {
                       </button>
                     </div>
                     <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-600">
-                      {(() => {
-                        const IconComponent = getTypeIcon(item.type);
-                        return <IconComponent size={10} weight="fill" className="text-black" />;
-                      })()}
                       <span>{getRelativeTime(item.timestamp)}</span>
                     </div>
                   </div>
